@@ -1,8 +1,8 @@
 module amneos
 
-go 1.16
+go 1.13
 
 require (
-	github.com/gin-gonic/gin v1.7.2 // indirect
-	github.com/jinzhu/gorm v1.9.16 // indirect
+	github.com/gin-gonic/gin v1.7.2
+	github.com/giorgisio/goav v0.1.0
 )

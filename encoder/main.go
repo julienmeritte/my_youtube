@@ -1,9 +1,9 @@
 package main
 
 import (
+	"amneos/controllers"
+	"amneos/services"
 	"fmt"
-	"amneos/encoder"
-	"amneos/api"
 	"github.com/gin-gonic/gin"
 )
 
@@ -13,10 +13,13 @@ func main() {
 
 	r := gin.Default()
 
-	r.GET("/videos", api.GetVideos)
+	r.GET("/video", controllers.GetVideos)
 
-	r.Run()
+	err := r.Run(":8081")
+	if err != nil {
+		return
+	}
 
-	api.SayVideo()
-	encoder.SayEncoder()
+	controllers.SayVideo()
+	services.SayEncoder()
 }

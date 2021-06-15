@@ -11,9 +11,9 @@ import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
@@ -21,6 +21,8 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.Collections;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -61,15 +63,23 @@ public class Cvideo {
         return ResponseEntity.status(201).body(jsonResponse.toString());
     }
 
-    // TODO
     @PatchMapping(value = "video/{idvideo}")
     public ResponseEntity<Object> encodeVideo(@PathVariable(name = "idvideo") Long idVideo, @RequestParam(name = "format") String format, @RequestParam(name = "file") String filename) throws JSONException {
+
+        final var uri = "http://localhost:8081/video";
+        var restTemplate = new RestTemplate();
+        var headers = new HttpHeaders();
+        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+        ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.GET, entity, String.class);
         var jsonResponse = new JSONObject();
-        if (format.equals("1080") || format.equals("720") || format.equals("480") || format.equals("360") || format.equals("240") || format.equals("144")) {
+        jsonResponse.put("data", response.getBody());
+
+        /*if (format.equals("1080") || format.equals("720") || format.equals("480") || format.equals("360") || format.equals("240") || format.equals("144")) {
              jsonResponse = videoService.encodeVideoByName(idVideo, format, filename);
         } else {
             throw new CustomFormatException("Format not recognnized", format, filename);
-        }
+        }*/
 
         return ResponseEntity.status(201).body(jsonResponse.toString());
     }

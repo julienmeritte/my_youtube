@@ -1,8 +1,9 @@
-package api
+package controllers
 
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	_ "github.com/giorgisio/goav/avformat"
 	"net/http"
 )
 

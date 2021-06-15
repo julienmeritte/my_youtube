@@ -22,6 +22,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,23 +52,25 @@ public class Svideo {
                 pathFile = videoPath + "1080" + name;
                 namePath = "1080" + name;
             } else {
-                pathFile = videoPath + i + "_1080" + name;
-                namePath = i + "_1080" + name;
+                pathFile = videoPath + "1080" + name + i;
+                namePath = "1080" + name + i;
             }
             root = Paths.get(pathFile);
             tempFile = new File(String.valueOf(root));
             String extension = FilenameUtils.getExtension(String.valueOf(tempFile));
-            if (!extension.equals("mp4")) {
+            /*if (!extension.equals("mp4")) {
                 throw new CustomInvalidRegexException(extension, "fichier d'extension mp4");
-            }
+            }*/
             if (!tempFile.exists()) {
-                Files.write(root, source.getBytes());
+                //Files.write(root, source.getBytes());
+                Files.copy(source.getInputStream(), root);
                 break;
             }
         }
+        var staticRoot = Paths.get("videos/" + namePath);
         var video = new Evideo();
         video.setName(name);
-        video.setSource(root.toString());
+        video.setSource(staticRoot.toString());
         video.setNamePath(namePath);
         video.setEnabled(true);
         video.setUser(user);
