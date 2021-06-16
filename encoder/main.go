@@ -13,7 +13,7 @@ func main() {
 
 	r := gin.Default()
 
-	r.GET("/video", controllers.GetVideos)
+	r.POST("/video", controllers.GetVideos)
 
 	err := r.Run(":8081")
 	if err != nil {
