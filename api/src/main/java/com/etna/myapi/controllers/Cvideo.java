@@ -1,6 +1,5 @@
 package com.etna.myapi.controllers;
 
-import com.etna.myapi.Exception.CustomFormatException;
 import com.etna.myapi.entity.Eusers;
 import com.etna.myapi.entity.Evideo;
 import com.etna.myapi.services.Susers;
@@ -11,7 +10,9 @@ import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.*;
+import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,9 +20,9 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.Collections;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -38,10 +39,26 @@ public class Cvideo {
     @PostMapping(value = "user/{iduser}/video", consumes = {
             MediaType.MULTIPART_FORM_DATA_VALUE,
             MediaType.APPLICATION_OCTET_STREAM_VALUE})
-    public ResponseEntity<Object> setContent(@PathVariable(name = "iduser") Long idUser, @RequestParam(name = "name") String name, @RequestPart("source") @Valid @NotNull @NotEmpty MultipartFile source) throws IOException, JSONException {
+    public ResponseEntity<Object> createVideo(@PathVariable(name = "iduser") Long idUser, @RequestParam(name = "name") String name, @RequestPart("source") @Valid @NotNull @NotEmpty MultipartFile source) throws IOException, JSONException {
+
+
+        final var uri = "http://localhost:8081/video";
 
         Eusers user = userService.findByUserId(idUser);
         Evideo video = videoService.addVideo(user, name, source);
+
+        String videoPath = System.getProperty("user.dir") + "/src/main/resources/static/" + video.getSource();
+        var root = Paths.get(videoPath);
+
+        LinkedMultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
+        FileSystemResource value = new FileSystemResource(new File(String.valueOf(root)));
+        map.add("file", value);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+        HttpEntity<LinkedMultiValueMap<String, Object>> requestEntity = new HttpEntity<>(map, headers);
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.exchange(uri, HttpMethod.POST, requestEntity, String.class);
+
 
         var jsonResponse = new JSONObject();
         jsonResponse.put("message", "OK");
@@ -65,6 +82,11 @@ public class Cvideo {
 
     @PatchMapping(value = "video/{idvideo}")
     public ResponseEntity<Object> encodeVideo(@PathVariable(name = "idvideo") Long idVideo, @RequestParam(name = "format") String format, @RequestParam(name = "file") String filename) throws JSONException {
+
+        String videoPath = System.getProperty("user.dir") + "/src/main/resources/static/videos/1080testvideo";
+        var root = Paths.get(videoPath);
+        var tempFile = new File(String.valueOf(root));
+
 
         final var uri = "http://localhost:8081/video";
         var restTemplate = new RestTemplate();

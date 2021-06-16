@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	_ "github.com/giorgisio/goav/avformat"
+	"log"
 	"net/http"
 )
 
@@ -13,5 +14,15 @@ func SayVideo() {
 
 func GetVideos(c *gin.Context) {
 
-	c.JSON(http.StatusOK, gin.H{"data": "ok"})
+	file, err := c.FormFile("file")
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println(file.Filename)
+
+	err = c.SaveUploadedFile(file, "temp/"+file.Filename)
+	if err != nil {
+		log.Fatal(err)
+	}
+	c.JSON(http.StatusOK, file.Filename)
 }
