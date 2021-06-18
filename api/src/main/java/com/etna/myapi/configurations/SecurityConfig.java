@@ -44,6 +44,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/user/{\\d+}/videos").permitAll()
                 .antMatchers("/auth").permitAll()
                 .antMatchers("/videos").permitAll()
+                .antMatchers("/format/{\\d+}").permitAll()
                 .antMatchers(HttpMethod.PUT, "/video/{\\d+}").permitAll()
                 .anyRequest().authenticated();
 

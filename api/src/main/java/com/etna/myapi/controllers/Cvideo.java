@@ -16,6 +16,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
@@ -51,14 +52,16 @@ public class Cvideo {
         var root = Paths.get(videoPath);
 
         LinkedMultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
-        FileSystemResource value = new FileSystemResource(new File(String.valueOf(root)));
+        var value = new FileSystemResource(new File(String.valueOf(root)));
         map.add("file", value);
-        HttpHeaders headers = new HttpHeaders();
+        var headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
         HttpEntity<LinkedMultiValueMap<String, Object>> requestEntity = new HttpEntity<>(map, headers);
-        RestTemplate restTemplate = new RestTemplate();
-        restTemplate.exchange(uri, HttpMethod.POST, requestEntity, String.class);
 
+        var builder = UriComponentsBuilder.fromHttpUrl(uri);
+        builder.queryParam("idvideo", video.getIdVideo());
+        var restTemplate = new RestTemplate();
+        restTemplate.exchange(builder.build().encode().toUri(), HttpMethod.POST, requestEntity, String.class);
 
         var jsonResponse = new JSONObject();
         jsonResponse.put("message", "OK");
@@ -80,28 +83,18 @@ public class Cvideo {
         return ResponseEntity.status(201).body(jsonResponse.toString());
     }
 
-    @PatchMapping(value = "video/{idvideo}")
-    public ResponseEntity<Object> encodeVideo(@PathVariable(name = "idvideo") Long idVideo, @RequestParam(name = "format") String format, @RequestParam(name = "file") String filename) throws JSONException {
+    @PostMapping(value = "format/{idvideo}", consumes = {
+            MediaType.MULTIPART_FORM_DATA_VALUE,
+            MediaType.APPLICATION_OCTET_STREAM_VALUE})
+    public ResponseEntity<Object> registerVideoFormat(@PathVariable(name = "idvideo") Long idVideo, @RequestParam(name = "format") String format,  @RequestPart("source") @Valid @NotNull @NotEmpty MultipartFile source) throws JSONException, IOException {
 
-        String videoPath = System.getProperty("user.dir") + "/src/main/resources/static/videos/1080testvideo";
-        var root = Paths.get(videoPath);
-        var tempFile = new File(String.valueOf(root));
+        Evideo video = videoService.findByVideoId(idVideo);
+        video = videoService.addFormat(video, format, source);
+        Eusers user = video.getUser();
 
-
-        final var uri = "http://localhost:8081/video";
-        var restTemplate = new RestTemplate();
-        var headers = new HttpHeaders();
-        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-        ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.GET, entity, String.class);
         var jsonResponse = new JSONObject();
-        jsonResponse.put("data", response.getBody());
-
-        /*if (format.equals("1080") || format.equals("720") || format.equals("480") || format.equals("360") || format.equals("240") || format.equals("144")) {
-             jsonResponse = videoService.encodeVideoByName(idVideo, format, filename);
-        } else {
-            throw new CustomFormatException("Format not recognnized", format, filename);
-        }*/
+        jsonResponse.put("message", "OK");
+        jsonResponse.put("data", Utils.jsonifyVideo(video, user));
 
         return ResponseEntity.status(201).body(jsonResponse.toString());
     }
