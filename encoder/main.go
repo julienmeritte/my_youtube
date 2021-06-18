@@ -2,13 +2,12 @@ package main
 
 import (
 	"amneos/controllers"
-	"amneos/services"
 	"fmt"
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	fmt.Println("test")
+	fmt.Println("main -> Program started")
 
 
 	r := gin.Default()
@@ -19,7 +18,4 @@ func main() {
 	if err != nil {
 		return
 	}
-
-	controllers.SayVideo()
-	services.SayEncoder()
 }

@@ -49,20 +49,15 @@ public class Svideo {
         String pathFile;
         for (var i = 0; true; i++) {
             if (i == 0) {
-                pathFile = videoPath + "1080" + name;
-                namePath = "1080" + name;
+                pathFile = videoPath + "base" + name;
+                namePath = "base" + name;
             } else {
-                pathFile = videoPath + "1080" + name + i;
-                namePath = "1080" + name + i;
+                pathFile = videoPath + "base" + name + i;
+                namePath = "base" + name + i;
             }
             root = Paths.get(pathFile);
             tempFile = new File(String.valueOf(root));
-            String extension = FilenameUtils.getExtension(String.valueOf(tempFile));
-            /*if (!extension.equals("mp4")) {
-                throw new CustomInvalidRegexException(extension, "fichier d'extension mp4");
-            }*/
             if (!tempFile.exists()) {
-                //Files.write(root, source.getBytes());
                 Files.copy(source.getInputStream(), root);
                 break;
             }
@@ -75,15 +70,32 @@ public class Svideo {
         video.setEnabled(true);
         video.setUser(user);
         video.setDuration(Utils.getMp4Duration(root.toString()));
-        var format = new Eformat();
-        format.setVideo(video);
-        format.setName("1080");
-        format.setSource(root.toString());
         List<Eformat> formats = new ArrayList<>();
-        formats.add(format);
         video.setFormats(formats);
         videoRepository.save(video);
-        formatRepository.save(format);
+        return video;
+    }
+
+    @Transactional
+    public Evideo addFormat(Evideo video, String format, MultipartFile source) throws IOException {
+        var name = video.getNamePath().replace("base", format);
+        var root = Paths.get(System.getProperty("user.dir") + "/src/main/resources/static/videos/" + name);
+        File tempFile = new File(String.valueOf(root));
+        if (!tempFile.exists()) {
+            Files.copy(source.getInputStream(), root);
+        }
+
+        var eformat = new Eformat();
+        eformat.setVideo(video);
+        eformat.setName(name);
+        eformat.setSource("video/" + name);
+        List<Eformat> formats;
+        formats = video.getFormats();
+        formats.add(eformat);
+        video.setFormats(formats);
+
+        videoRepository.save(video);
+        formatRepository.save(eformat);
         return video;
     }
 
