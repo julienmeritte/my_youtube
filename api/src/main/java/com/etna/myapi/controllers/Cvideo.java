@@ -1,5 +1,7 @@
 package com.etna.myapi.controllers;
 
+import com.etna.myapi.Exception.CustomInvalidException;
+import com.etna.myapi.Exception.CustomResourceException;
 import com.etna.myapi.entity.Eusers;
 import com.etna.myapi.entity.Evideo;
 import com.etna.myapi.services.Susers;
@@ -71,22 +73,56 @@ public class Cvideo {
     }
 
     @GetMapping(value = "videos")
-    public ResponseEntity<Object> getAllVideos(@RequestParam(name = "name") String name, @RequestParam(name = "user") String username, @RequestParam(name = "duration") int duration, @RequestParam(name = "page") int page, @RequestParam(name = "perPage") int perPage) throws JSONException {
-        JSONObject jsonResponse = videoService.getAllVideos(name, username, duration, page, perPage);
+    public ResponseEntity<Object> getAllVideos(@RequestParam(name = "name", required = false) String name, @RequestParam(name = "user", required = false) String username, @RequestParam(name = "duration", required = false) String duration, @RequestParam(name = "page", required = false) String page, @RequestParam(name = "perPage", required = false) String perPage) throws JSONException {
+        if (page == null) {
+            page = "1";
+        }
+
+        if (perPage == null) {
+            perPage = "5";
+        }
+
+        int pageNumber;
+        int perPageNumber;
+
+        try {
+            pageNumber = Integer.parseInt(page);
+            perPageNumber = Integer.parseInt(perPage);
+        } catch (Exception e) {
+            throw new CustomInvalidException();
+        }
+        JSONObject jsonResponse = videoService.getAllVideos(name, username, duration, pageNumber, perPageNumber);
         return ResponseEntity.status(201).body(jsonResponse.toString());
     }
 
     @GetMapping(value = "user/{iduser}/videos")
-    public ResponseEntity<Object> getAllVideosByUser(@PathVariable(name = "iduser") Long idUser, @RequestParam(name = "page") int page, @RequestParam(name = "perPage") int perPage) throws JSONException {
+    public ResponseEntity<Object> getAllVideosByUser(@PathVariable(name = "iduser") Long idUser, @RequestParam(name = "page", required = false) String page, @RequestParam(name = "perPage", required = false) String perPage) throws JSONException {
         Eusers user = userService.findByUserId(idUser);
-        var jsonResponse = videoService.getAllVideosByUser(user, page, perPage);
+        if (page == null) {
+            page = "1";
+        }
+
+        if (perPage == null) {
+            perPage = "5";
+        }
+
+        int pageNumber;
+        int perPageNumber;
+
+        try {
+            pageNumber = Integer.parseInt(page);
+            perPageNumber = Integer.parseInt(perPage);
+        } catch (Exception e) {
+            throw new CustomInvalidException();
+        }
+        var jsonResponse = videoService.getAllVideosByUser(user, pageNumber, perPageNumber);
         return ResponseEntity.status(201).body(jsonResponse.toString());
     }
 
     @PostMapping(value = "format/{idvideo}", consumes = {
             MediaType.MULTIPART_FORM_DATA_VALUE,
             MediaType.APPLICATION_OCTET_STREAM_VALUE})
-    public ResponseEntity<Object> registerVideoFormat(@PathVariable(name = "idvideo") Long idVideo, @RequestParam(name = "format") String format,  @RequestPart("source") @Valid @NotNull @NotEmpty MultipartFile source) throws JSONException, IOException {
+    public ResponseEntity<Object> registerVideoFormat(@PathVariable(name = "idvideo") Long idVideo, @RequestParam(name = "format") String format, @RequestPart("source") @Valid @NotNull @NotEmpty MultipartFile source) throws JSONException, IOException {
 
         Evideo video = videoService.findByVideoId(idVideo);
         video = videoService.addFormat(video, format, source);
@@ -100,8 +136,21 @@ public class Cvideo {
     }
 
     @PutMapping(value = "video/{idvideo}")
-    public ResponseEntity<Object> updateVideo(@PathVariable(name = "idvideo") Long idVideo, @RequestParam(name = "name") String name, @RequestParam(name = "user") Long idUser) throws JSONException {
-        Eusers user = userService.findByUserId(idUser);
+    public ResponseEntity<Object> updateVideo(@PathVariable(name = "idvideo") Long idVideo, @RequestParam(name = "name", required = false) String name, @RequestParam(name = "user", required = false) String idUser) throws JSONException {
+        long idUserConverted;
+        Eusers user = null;
+        if (idUser != null) {
+            try {
+                idUserConverted = Long.parseLong(idUser);
+            } catch (Exception e) {
+                throw new CustomInvalidException();
+            }
+            user = userService.findByUserId(idUserConverted);
+            if (user == null) {
+                throw new CustomResourceException();
+            }
+        }
+
         var jsonResponse = videoService.updateVideoByUserId(user, name, idVideo);
         return ResponseEntity.status(201).body(jsonResponse.toString());
     }

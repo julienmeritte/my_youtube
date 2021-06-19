@@ -1,5 +1,6 @@
 package com.etna.myapi.controllers;
 
+import com.etna.myapi.Exception.CustomResourceException;
 import com.etna.myapi.entity.Eusers;
 import com.etna.myapi.entity.Evideo;
 import com.etna.myapi.services.Scomment;
@@ -29,7 +30,8 @@ public class Ccomment {
     @PostMapping("video/{id}/comment")
     public ResponseEntity<Object> createComment(@PathVariable(name = "id") Long id, @RequestParam(name = "body") String body, HttpServletRequest request) throws JSONException {
         Eusers user = userService.getCurrentUser(request);
-        Evideo video = videoService.findByVideoId(id);
+        Evideo video = null;
+        video = videoService.findByVideoId(id);
         return ResponseEntity.status(201).body(commentService.createComment(user, video, body).toString());
     }
 
