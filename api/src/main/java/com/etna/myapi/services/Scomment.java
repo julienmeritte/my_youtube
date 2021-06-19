@@ -2,6 +2,7 @@ package com.etna.myapi.services;
 
 import com.etna.myapi.Exception.CustomInvalidException;
 import com.etna.myapi.Exception.CustomInvalidPagerException;
+import com.etna.myapi.Exception.CustomResourceException;
 import com.etna.myapi.entity.Ecomment;
 import com.etna.myapi.entity.Eusers;
 import com.etna.myapi.entity.Evideo;
@@ -24,6 +25,10 @@ public class Scomment {
 
     public JSONObject createComment(Eusers user, Evideo video, String body) throws JSONException {
         var comment = new Ecomment();
+
+        if (video == null) {
+            throw new CustomResourceException();
+        }
 
         try {
             comment.setUser(user);

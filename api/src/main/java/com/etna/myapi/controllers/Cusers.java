@@ -8,6 +8,7 @@ import com.etna.myapi.repositories.Rusers;
 import com.etna.myapi.services.Serror;
 import com.etna.myapi.utils.Constants;
 import com.etna.myapi.utils.Utils;
+import lombok.extern.slf4j.Slf4j;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
+@Slf4j
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/")
@@ -91,24 +93,41 @@ public class Cusers {
     }
 
     @PutMapping("user/{id}")
-    public ResponseEntity<Object> userUpdate(@PathVariable Long id, @RequestParam(name = "username") String username, @RequestParam(name = "pseudo", required = false) String pseudo, @RequestParam(name = "email") String email, @RequestParam(name = "password") String password) throws JSONException {
-        if (Utils.isValidRegex(email, Constants.regexMail)) {
-            throw new CustomInvalidRegexException(email, "email type");
-        } else if (password.length() <= 5) {
-            throw new CustomInvalidRegexException(password, "password type - needs to be more than 5 characters");
-        } else if (Utils.isValidRegex(username, Constants.username)) {
-            throw new CustomInvalidRegexException(username, "username type - Invalid");
+    public ResponseEntity<Object> userUpdate(@PathVariable Long id, @RequestParam(name = "username", required = false) String username, @RequestParam(name = "pseudo", required = false) String pseudo, @RequestParam(name = "email", required = false) String email, @RequestParam(name = "password", required = false) String password) throws JSONException {
+
+        if (email != null) {
+            if (Utils.isValidRegex(email, Constants.regexMail)) {
+                throw new CustomInvalidRegexException(email, "email type");
+            }
+        } else if (password != null) {
+            if (password.length() <= 5) {
+                throw new CustomInvalidRegexException(password, "password type - needs to be more than 5 characters");
+            }
+        } else if (username != null) {
+            if (Utils.isValidRegex(username, Constants.username)) {
+                throw new CustomInvalidRegexException(username, "username type - Invalid");
+            }
         }
         Eusers user = userService.getUserById(id);
         var jsonResponse = new JSONObject();
         if (user != null) {
+            if (password != null) {
                 user.setPassword(bcryptEncoder.encode(password));
+            }
+            if (email != null) {
                 user.setEmail(email);
+            }
+            if (username != null) {
                 user.setUsername(username);
+            }
+            if (pseudo != null) {
                 user.setPseudo(pseudo);
+            }
+            if (password != null || email != null || username != null || pseudo != null) {
                 userRepository.save(user);
-                jsonResponse.put("message", "OK");
-                jsonResponse.put("data", Utils.jsonifyEuser(user));
+            }
+            jsonResponse.put("message", "OK");
+            jsonResponse.put("data", Utils.jsonifyEuser(user));
             return ResponseEntity.status(200).body(jsonResponse.toString());
         } else {
             jsonResponse.put("message", "OK");
@@ -118,9 +137,33 @@ public class Cusers {
     }
 
     @GetMapping("users")
-    public ResponseEntity<Object> getAllUsers(@RequestParam(name = "pseudo") String pseudo, @RequestParam(name = "page", required = false) int page, @RequestParam(name = "perPage") int perPage) throws JSONException {
-        var users = userService.findUserByPseudo(pseudo);
-        var jsonResponse = userService.getAllUsers(users, page, perPage);
+    public ResponseEntity<Object> getAllUsers(@RequestParam(name = "pseudo", required = false) String pseudo, @RequestParam(name = "page", required = false) String page, @RequestParam(name = "perPage", required = false) String perPage) throws JSONException {
+        List<Eusers> users;
+        if (pseudo != null) {
+            users = userService.findUserByPseudo(pseudo);
+        } else {
+            users = userService.findAllUsers();
+        }
+
+        if (page == null) {
+            page = "1";
+        }
+
+        if (perPage == null) {
+            perPage = "5";
+        }
+
+        int pageNumber;
+        int perPageNumber;
+
+        try {
+            pageNumber = Integer.parseInt(page);
+            perPageNumber = Integer.parseInt(perPage);
+        } catch (Exception e) {
+            throw new CustomInvalidException();
+        }
+
+        var jsonResponse = userService.getAllUsers(users, pageNumber, perPageNumber);
         return ResponseEntity.status(400).body(jsonResponse.toString());
     }
 

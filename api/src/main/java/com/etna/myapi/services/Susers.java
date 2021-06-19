@@ -5,7 +5,6 @@ import com.etna.myapi.Exception.CustomInvalidPagerException;
 import com.etna.myapi.Exception.CustomResourceException;
 import com.etna.myapi.configurations.JwtTokenProvider;
 import com.etna.myapi.entity.Erole;
-import com.etna.myapi.entity.Evideo;
 import com.etna.myapi.repositories.Rusers;
 import com.etna.myapi.entity.Eusers;
 import com.etna.myapi.utils.Utils;
@@ -23,6 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class Susers {
@@ -78,6 +78,10 @@ public class Susers {
             throw new CustomResourceException();
         }
         return user;
+    }
+
+    public List<Eusers> findAllUsers() {
+        return userRepository.findAll();
     }
 
     public Eusers getCurrentUser(HttpServletRequest req) {

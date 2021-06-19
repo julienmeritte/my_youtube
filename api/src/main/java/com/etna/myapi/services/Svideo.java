@@ -25,6 +25,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class Svideo {
@@ -99,27 +100,29 @@ public class Svideo {
         return video;
     }
 
-    public JSONObject getAllVideos(String name, String id, int duration, int page, int perPage) throws JSONException {
+    public JSONObject getAllVideos(String name, String id, String duration, int page, int perPage) throws JSONException {
         List<Evideo> allVideos = videoRepository.findAll();
         List<Evideo> filteredVideos = new ArrayList<>();
         List<Evideo> perPageVideos = new ArrayList<>();
 
-        Eusers user;
+        Eusers user = null;
         int pageNumber;
         var count = 0;
         var actualPage = 1;
 
-        var idIsBoolean = Utils.isInteger(id);
+        if (id != null) {
+            var idIsBoolean = Utils.isInteger(id);
 
-        if (idIsBoolean) {
-            user = userService.findByUserId((long) Integer.parseInt(id));
-        } else {
-            user = userService.findUserByUsername(id);
+            if (idIsBoolean) {
+                user = userService.findByUserId((long) Integer.parseInt(id));
+            } else {
+                user = userService.findUserByUsername(id);
+            }
         }
 
         for (Evideo video : allVideos
         ) {
-            if (video.getName().equals(name) && video.getDuration() == duration && video.getUser() == user) {
+            if (isVideoNameEqual(video, name) && isVideoDurationEqual(video, duration) && isVideoUserEqual(video, user, id)) {
                 filteredVideos.add(video);
             }
         }
@@ -147,7 +150,7 @@ public class Svideo {
         jsonResponse.put("message", "OK");
         for (Evideo video : perPageVideos
         ) {
-            jsonArray.put(Utils.jsonifyVideo(video, user));
+            jsonArray.put(Utils.jsonifyVideo(video, video.getUser()));
         }
         jsonResponse.put("data", jsonArray);
         jsonResponse.put("pager", Utils.jsonifyPager(page, pageNumber));
@@ -198,13 +201,18 @@ public class Svideo {
         try {
             video = findByVideoId(idVideo);
             if (video != null) {
-                video.setName(name);
-                video.setUser(user);
-
-                videoRepository.save(video);
+                if (name != null) {
+                    video.setName(name);
+                }
+                if (user != null) {
+                    video.setUser(user);
+                }
+                if (name != null || user != null) {
+                    videoRepository.save(video);
+                }
 
                 jsonResponse.put("message", "OK");
-                jsonResponse.put("data", Utils.jsonifyVideo(video, user));
+                jsonResponse.put("data", Utils.jsonifyVideo(video, video.getUser()));
             } else {
                 throw new CustomResourceException();
             }
@@ -217,7 +225,7 @@ public class Svideo {
     public Evideo findByVideoId(Long idVideo) {
         Evideo video;
         try {
-            video = videoRepository.getById(idVideo);
+            video = videoRepository.findByIdVideo(idVideo);
         } catch (Exception e) {
             throw new CustomResourceException();
         }
@@ -241,7 +249,7 @@ public class Svideo {
         }
 
         for (Eformat formatVideo : video.getFormats()
-             ) {
+        ) {
             if (formatVideo.getName().equals(format)) {
                 throw new CustomFormatException("Le format est déjà existant", format, filename);
             }
@@ -307,6 +315,48 @@ public class Svideo {
                 break;
             default:
                 throw new CustomFormatException("Problème de format", format, filename);
+        }
+    }
+
+    private boolean isVideoNameEqual(Evideo video, String name) {
+        if (name != null) {
+            if (video.getName().equals(name)) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return true;
+        }
+    }
+
+    private boolean isVideoUserEqual(Evideo video, Eusers user, String id) {
+        if (id != null) {
+            if (video.getUser() == user) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return true;
+        }
+    }
+
+    private boolean isVideoDurationEqual(Evideo video, String duration) {
+        int converted;
+        if (duration != null) {
+            try {
+                converted = Integer.parseInt(duration);
+            } catch (Exception e) {
+                throw new CustomInvalidException();
+            }
+            if (video.getDuration() == converted) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return true;
         }
     }
 }
