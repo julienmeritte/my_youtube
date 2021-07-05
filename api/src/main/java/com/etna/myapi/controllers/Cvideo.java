@@ -28,7 +28,7 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Collections;
 
-@CrossOrigin(origins = "*", maxAge = 3600)
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
 @RequestMapping("/")
 public class Cvideo {
