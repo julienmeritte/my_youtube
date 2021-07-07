@@ -21,7 +21,7 @@
             </form>
         </div>
     </div>
-    
+
 </template>
 
 
@@ -36,7 +36,9 @@ export default {
     methods: {
             async loginCall(e) {
                     console.log(this.password + "  " + this.userName);
-                    const ip = await this.$axios.$get('api/auth?login=admin&password=admin');
+                    this.password = 'admin'; // to remove
+                    this.userName = 'admin'; // to remove
+                    const ip = await this.$axios.$post('http://localhost:8080/auth?login=' + this.userName + '&password=' + this.password);
                     this.ip = ip;
                     console.log(this.ip);
             }
