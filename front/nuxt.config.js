@@ -36,13 +36,25 @@ export default {
     // https://go.nuxtjs.dev/bootstrap
     'bootstrap-vue/nuxt',
     '@nuxtjs/axios',
+    '@nuxtjs/proxy'
   ],
+
+  axios: {
+    proxy: true,
+  },
+
+  env: {
+    baseUrl: process.env.BASE_URL || 'http://localhost:3000'
+  },
+
+  proxy: {
+    '/api/': {
+      target: 'http://localhost:8080/',
+      pathRewrite: { "^/api": "" },
+      changeOrigin: true,
+    }
+  },
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
-  },
-  publicRuntimeConfig: {
-    axios: {
-      baseURL: 'http://localhost:8080/'
-    }
   },
 }
