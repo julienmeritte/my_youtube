@@ -36,11 +36,7 @@ export default {
     // https://go.nuxtjs.dev/bootstrap
     'bootstrap-vue/nuxt',
     '@nuxtjs/axios',
-    '@nuxtjs/proxy'
   ],
-  proxy: {
-    '/api/': { target: 'http://localhost:8080/', pathRewrite: {'^/api/': ''} , changeOrigin: true}
-  },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
@@ -49,8 +45,5 @@ export default {
     axios: {
       baseURL: 'http://localhost:8080'
     }
-  },
-  axios: {
-    proxy: true
   },
 }
