@@ -30,17 +30,22 @@ export default {
     data() {
         return {
             userName: "",
-            password: "",
+            password: ""
         }
     },
     methods: {
             async loginCall(e) {
-                    console.log(this.password + "  " + this.userName);
-                    this.password = 'admin'; // to remove
-                    this.userName = 'admin'; // to remove
-                    const ip = await this.$axios.$post('http://localhost:8080/auth?login=' + this.userName + '&password=' + this.password);
-                    this.ip = ip;
-                    console.log(this.ip);
+                    try {
+                        const response = await this.$axios.$post('http://localhost:8080/auth?login=' + this.userName + '&password=' + this.password);
+                        this.response = response;
+                        sessionStorage.setItem("username" , this.response ["data"]["user"]["username"]);
+                        sessionStorage.setItem("id" , this.response ["data"]["user"]["id"]);
+                        sessionStorage.setItem("token" , this.response ["data"]["token"]);
+                        this.$router.push({path: "/"})
+                    } catch (error) {
+                        alert("invalid credentials");
+                        location.reload();
+                    }
             }
         }
 }

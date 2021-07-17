@@ -58,7 +58,7 @@
 export default {
     data() {
         return {
-            currentVideo: "http://techslides.com/demos/sample-videos/small.ogv",
+            currentVideo: "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
             tittleVideo: "video test",
             videoList: [] , 
             commentList: [],

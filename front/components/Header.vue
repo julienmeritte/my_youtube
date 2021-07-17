@@ -19,11 +19,11 @@
             <template #button-content>
                 <em>{{username}}</em>
                 </template>
-                <b-dropdown-item href="/account">Profile</b-dropdown-item>
-                <b-dropdown-item href="/login">Login</b-dropdown-item>
-                <b-dropdown-item href="/register">Register</b-dropdown-item>
-                <b-dropdown-item href="/pannel">Pannel</b-dropdown-item>
-                <b-dropdown-item href="#">Disconect</b-dropdown-item>
+                <b-dropdown-item v-show="connect" href="/account">Profile</b-dropdown-item>
+                <b-dropdown-item v-show="!connect" href="/login">Login</b-dropdown-item>
+                <b-dropdown-item v-show="!connect" href="/register">Register</b-dropdown-item>
+                <b-dropdown-item v-show="connect" href="/pannel">Pannel</b-dropdown-item>
+                <b-button size="sm" class="my-2 my-sm-0 m-3 mt-3 w-75" variant="danger" v-show="connect" v-on:click="disconect">disconect</b-button>
             </b-nav-item-dropdown>
         </b-navbar-nav>
         </b-collapse>
@@ -36,21 +36,27 @@
 export default {
     data() {
         return {
-            username : "."
+            username : "",
+            connect: false
         }
     },
     mounted() {
-        if (sessionStorage.getItem("username") == 'undefined') {
-            this.username = "User";
+        if (sessionStorage.getItem("username") == null) {
+            this.username = "";
         }
         else {
             this.username = sessionStorage.getItem("username");
+            this.connect = true;
         }
     },
     methods: {
         startSearching(e) {
             let test = {search};
             console.log(test.search.value);
+        },
+        disconect() {
+            sessionStorage.clear();
+            location.reload();
         }
     }
 }

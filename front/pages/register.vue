@@ -45,10 +45,24 @@ export default {
     },
     methods: {
             async registerCall(e) {
-                    console.log(this.password + "  " + this.userName + "  " + this.pseudo + "  " + this.mail);
-                    //const ip = await this.$axios.$get('api/auth?login=admin&password=admin');
-                    //this.ip = ip;
-                    //console.log(this.ip);
+                try {
+                    const responseR = await this.$axios.$post('http://localhost:8080/user?username=' + this.userName + '&password=' + this.password + '&pseudo=' + this.pseudo + '&email=' + this.mail);
+                    this.responseR = responseR;
+                } catch (error) {
+                    alert("please enter/check all credantials or user already exist");
+                    location.reload();
+                }
+                try {
+                    const response = await this.$axios.$post('http://localhost:8080/auth?login=' + this.userName + '&password=' + this.password);
+                    this.response = response;
+                    sessionStorage.setItem("username" , this.response ["data"]["user"]["username"]);
+                    sessionStorage.setItem("id" , this.response ["data"]["user"]["id"]);
+                    sessionStorage.setItem("token" , this.response ["data"]["token"]);
+                    this.$router.push({path: "/"})
+                } catch (error) {
+                    
+                }
+                    
             }
         }
 }
