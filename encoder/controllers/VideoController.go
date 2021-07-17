@@ -28,7 +28,7 @@ func GetVideos(c *gin.Context) {
 
 	log.Println(idVideo)
 	log.Println(file.Filename)
-	path := "temp/" + file.Filename
+	path := "../video" + file.Filename
 
 	// TODO delete this test function
 	err = c.SaveUploadedFile(file, path)

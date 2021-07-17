@@ -50,7 +50,7 @@ public class Cvideo {
         Eusers user = userService.findByUserId(idUser);
         Evideo video = videoService.addVideo(user, name, source);
 
-        String videoPath = System.getProperty("user.dir") + "/src/main/resources/static/" + video.getSource();
+        String videoPath = "../video/" + video.getSource();
         var root = Paths.get(videoPath);
 
         LinkedMultiValueMap<String, Object> map = new LinkedMultiValueMap<>();

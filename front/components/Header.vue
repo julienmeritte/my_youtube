@@ -19,7 +19,6 @@
             <template #button-content>
                 <em>{{username}}</em>
                 </template>
-                <b-dropdown-item v-show="connect" href="/account">Profile</b-dropdown-item>
                 <b-dropdown-item v-show="!connect" href="/login">Login</b-dropdown-item>
                 <b-dropdown-item v-show="!connect" href="/register">Register</b-dropdown-item>
                 <b-dropdown-item v-show="connect" href="/pannel">Pannel</b-dropdown-item>
