@@ -87,7 +87,7 @@ export default {
   async mounted() {
     let idUser = sessionStorage.getItem("id");
     let tokenUser = sessionStorage.getItem("token");
-    this.$axios.defaults.headers.common["Authorization"] = `Bearer ${tokenUser}`;
+    this.$axios.defaults.headers.common["Authorization"] = 'Bearer ' + tokenUser;
     try {
       const response = await this.$axios.$get('http://localhost:8080/user/' + idUser);
       console.log("test : " + response);
