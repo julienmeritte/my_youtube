@@ -38,13 +38,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
         http.authorizeRequests()//
-                .antMatchers("/user").permitAll()
+                /*.antMatchers("/user").permitAll()
                 .antMatchers("/users").permitAll()
                 .antMatchers("/user/{\\d+}/videos").permitAll()
                 .antMatchers("/auth").permitAll()
                 .antMatchers("/videos").permitAll()
                 .antMatchers("/format/{\\d+}").permitAll()
-                .antMatchers(HttpMethod.PUT, "/video/{\\d+}").permitAll()
+                .antMatchers(HttpMethod.PUT, "/video/{\\d+}").permitAll()*/
+                .antMatchers("/**").permitAll()
                 .anyRequest().authenticated();
 
         http.exceptionHandling().authenticationEntryPoint((request, response, e) ->
