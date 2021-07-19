@@ -60,7 +60,7 @@
               <div class="m-3 d-flex flex-row">
                 <img class="w-100 h-100 p-2 img-fluid img-thumbnail border-0" :src="`${currentVideo}`">
                 <p class="p-2">test</p>
-                <button type="button" class="btn btn-danger" v-on:click="removeVideo">remove</button>
+                <button type="button" class="btn btn-danger"  v-on:click="removeVideo">remove</button>
               </div>
 
             </div>
@@ -87,10 +87,13 @@ export default {
   async mounted() {
     let idUser = sessionStorage.getItem("id");
     let tokenUser = sessionStorage.getItem("token");
-    this.$axios.defaults.headers.common["Authorization"] = 'Bearer ' + tokenUser;
     try {
       const response = await this.$axios.$get('http://localhost:8080/user/' + idUser);
-      console.log("test : " + response);
+      if (response.data.pseudo != null) {
+        this.pseudo = response.data.pseudo;
+      }
+      this.userName = response.data.username;
+      this.mail = response.data.email;
     } catch (error) {
       console.log(error);
     }
@@ -98,13 +101,48 @@ export default {
   },
   methods: {
     file() {
-      console.log(event.target.files);
+      this.videoFile = event.target.files;
     },
-    updateAccount() {
-      console.log("j'update le compte");
+    async updateAccount() {
+      let id = sessionStorage.getItem("id");
+      let url = 'http://localhost:8080/user/' + id + '?';
+      url += 'username=' + this.userName;
+      if (this.password != "") {
+        url += '&password=' + this.password;
+      }
+      if (this.pseudo != "") {
+        url += '&pseudo=' + this.pseudo;
+      }
+      url += '&email' + this.mail;
+      try {
+        const response = await this.$axios.$put(url);
+        console.log(response);
+      } catch (error) {
+        console.log(error);
+      }
+      location.reload();
     },
-    uploadVideo() {
-      console.log("c'est parti pour l'upload");
+    async uploadVideo() {
+      let formData = new FormData();
+      formData.append('file', this.videoFile);
+      let id = sessionStorage.getItem("id");
+      let url = 'http://localhost:8080/user/' + id + '/video?';
+      if (this.videoName == "") {
+        this.videoName = 'no name';
+      }
+      url += "iduser=" + id;
+      url += "&name=" + this.videoName;
+      try {
+        await this.$axios.$post( url , formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            }
+          }
+        )
+      } catch (error) {
+        
+      }
+      
     },
     removeVideo() {
       console.log("je remove la video");

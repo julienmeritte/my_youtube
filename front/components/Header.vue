@@ -55,7 +55,7 @@ export default {
         },
         disconect() {
             sessionStorage.clear();
-            location.reload();
+           this.$router.push({path: "/"});
         }
     }
 }
