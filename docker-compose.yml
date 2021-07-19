@@ -1,0 +1,29 @@
+version: "3"
+
+services:
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    command: bash -c "mvn clean install && java -jar target/myapi-0.0.1-SNAPSHOT.jar"
+    ports:
+    - "8080:8080"
+    depends_on:
+    - mysqldb
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysqldb/myapi
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD:
+    
+  mysqldb:
+    image: mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: myapi
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+volumes:
+  mysql-data:
