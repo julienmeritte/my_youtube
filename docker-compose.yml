@@ -7,13 +7,15 @@ services:
       dockerfile: Dockerfile
     command: bash -c "mvn clean install && java -jar target/myapi-0.0.1-SNAPSHOT.jar"
     ports:
-    - "8080:8080"
+      - "8080:8080"
+    restart: always
     depends_on:
-    - mysqldb
+      - mysqldb
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysqldb:3306/myapi
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: root
+      SPRING_JPA_HIBERNATE_DDL_AUTO: create-drop
     networks:
       - backend
     
@@ -21,26 +23,27 @@ services:
     image: mysql:8.0.25
     ports:
       - "3306:3306"
+    restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: myapi
     volumes:
       - mysql-data:/var/lib/mysql
     networks:
-    - backend
+      - backend
+    
+  encoder:
+    build:
+      context: ./encoder
+      dockerfile: Dockerfile
+    restart: always
+    depends_on:
+      - api
+    networks:
+      - backend
 
 volumes:
   mysql-data:
   
 networks:
   backend:
-  
-        
-  #encoder:
-   # build:
-  #    context: ./encoder
-   #   dockerfile: Dockerfile
-   # ports:
-   #   - "8081:8081"
-   # networks:
-   #   - backend

@@ -49,7 +49,7 @@ public class MyapiApplication implements CommandLineRunner {
         userService.createUser(client);
 
         try {
-            var root = Paths.get(System.getProperty("user.dir") + "/src/main/resources/static/videos/");
+            var root = Paths.get("./app" + File.separator + "static" + File.separator + "videos" + File.separator);
             FileUtils.cleanDirectory(new File(root.toString()));
         } catch (Exception e) {
 
