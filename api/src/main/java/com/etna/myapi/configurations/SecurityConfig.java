@@ -37,15 +37,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.csrf().disable();
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
-        http.authorizeRequests()//
-                /*.antMatchers("/user").permitAll()
+        http.authorizeRequests()
+                .antMatchers("/user").permitAll()
                 .antMatchers("/users").permitAll()
                 .antMatchers("/user/{\\d+}/videos").permitAll()
                 .antMatchers("/auth").permitAll()
                 .antMatchers("/videos").permitAll()
                 .antMatchers("/format/{\\d+}").permitAll()
-                .antMatchers(HttpMethod.PUT, "/video/{\\d+}").permitAll()*/
-                .antMatchers("/**").permitAll()
+                .antMatchers(HttpMethod.PUT, "/video/{\\d+}").permitAll()
                 .anyRequest().authenticated();
 
         http.exceptionHandling().authenticationEntryPoint((request, response, e) ->

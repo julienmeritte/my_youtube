@@ -22,7 +22,7 @@
                 </div>
                 <div class="form-group">
                   <label for="video">Video file</label>
-                  <input type="file" class="form-control-file" multiple id="video" @change="file()">
+                  <input type="file" id="file" ref="file" v-on:change="file()"/>
                 </div>
                 <button class="btn btn-primary" v-on:click="uploadVideo">Submit</button>
               </form>
@@ -87,14 +87,19 @@ export default {
   async mounted() {
     let idUser = sessionStorage.getItem("id");
     let tokenUser = sessionStorage.getItem("token");
-    this.$axios.defaults.headers.common["Authorization"] = 'Bearer ' + tokenUser;
     try {
-      const response = await this.$axios.$get('http://localhost:8080/user/' + idUser);
+      const response = await this.$axios.$get('http://localhost:3000/api/user/' + idUser, {
+        headers: {
+          Authorization: "Bearer " + tokenUser
+        }
+      });
       if (response.data.pseudo != null) {
         this.pseudo = response.data.pseudo;
       }
       this.userName = response.data.username;
       this.mail = response.data.email;
+
+      console.log("test : " + response);
     } catch (error) {
       console.log(error);
     }
@@ -102,7 +107,8 @@ export default {
   },
   methods: {
     file() {
-      this.videoFile = event.target.files;
+      console.log(event.target.files);
+      this.videoFile = this.$refs.file.files[0];
     },
     async updateAccount() {
       let id = sessionStorage.getItem("id");
@@ -124,26 +130,22 @@ export default {
       location.reload();
     },
     async uploadVideo() {
-      let formData = new FormData();
-      formData.append('file', this.videoFile);
-      let id = sessionStorage.getItem("id");
-      let url = 'http://localhost:8080/user/' + id + '/video?';
-      if (this.videoName == "") {
-        this.videoName = 'no name';
-      }
-      url += "iduser=" + id;
-      url += "&name=" + this.videoName;
       try {
-        await this.$axios.$post( url , formData, {
-            headers: {
-              'Content-Type': 'multipart/form-data'
-            }
+        let idUser = sessionStorage.getItem("id");
+        let tokenUser = sessionStorage.getItem("token");
+        const formData = new FormData();
+        formData.append("name", this.videoName);
+        formData.append("source", this.videoFile);
+        const response = await this.$axios.$post('http://localhost:3000/api/user/' + idUser + '/video', formData, {
+          headers: {
+            Authorization: "Bearer " + tokenUser
           }
-        )
+        });
+        console.log("test : " + response);
       } catch (error) {
-        
+        console.log(error);
       }
-      
+      console.log("c'est parti pour l'upload");
     },
     removeVideo() {
       console.log("je remove la video");

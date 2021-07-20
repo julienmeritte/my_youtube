@@ -11,12 +11,14 @@ services:
     depends_on:
     - mysqldb
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysqldb/myapi
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysqldb:3306/myapi
       SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD:
+      SPRING_DATASOURCE_PASSWORD: root
+    networks:
+      - backend
     
   mysqldb:
-    image: mysql
+    image: mysql:8.0.25
     ports:
       - "3306:3306"
     environment:
@@ -24,6 +26,21 @@ services:
       MYSQL_DATABASE: myapi
     volumes:
       - mysql-data:/var/lib/mysql
+    networks:
+    - backend
 
 volumes:
   mysql-data:
+  
+networks:
+  backend:
+  
+        
+  #encoder:
+   # build:
+  #    context: ./encoder
+   #   dockerfile: Dockerfile
+   # ports:
+   #   - "8081:8081"
+   # networks:
+   #   - backend

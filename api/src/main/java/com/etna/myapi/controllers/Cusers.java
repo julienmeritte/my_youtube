@@ -177,4 +177,14 @@ public class Cusers {
         jsonResponse.put("data", jsonArray);
         return ResponseEntity.status(400).body(jsonResponse.toString());
     }
+
+    @GetMapping("user/me")
+    public ResponseEntity<Object> getMyUser(HttpServletRequest req) throws JSONException {
+        Eusers user = userService.getCurrentUser(req);
+
+        var jsonResponse = new JSONObject();
+        jsonResponse.put("message", "OK");
+        jsonResponse.put("data", Utils.jsonifyEuser(user));
+        return ResponseEntity.status(200).body(jsonResponse.toString());
+    }
 }
