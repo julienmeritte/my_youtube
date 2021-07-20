@@ -36,12 +36,31 @@ export default {
     // https://go.nuxtjs.dev/bootstrap
     'bootstrap-vue/nuxt',
     '@nuxtjs/axios',
+    '@nuxtjs/auth',
     '@nuxtjs/proxy'
   ],
 
   axios: {
     proxy: true,
   },
+
+  /*auth: {
+    localStorage: false,
+    cookie: {
+      options: {
+        expires: 7
+      }
+    },
+    strategies: {
+      local: {
+        endpoints: {
+          login: { url: '/api/auth', method: 'post', propertyName: 'data.token' },
+          user: { url: '/api/user/me', method: 'get', propertyName: 'data' },
+          logout: false
+        }
+      }
+    }
+  },*/
 
   env: {
     baseUrl: process.env.BASE_URL || 'http://localhost:3000'
