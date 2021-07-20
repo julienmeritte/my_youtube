@@ -22,10 +22,10 @@ public class Eusers implements Serializable {
     @GeneratedValue
     private Long idUser;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private String username;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private String email;
 
     @Column(nullable = true)

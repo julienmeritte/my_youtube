@@ -8,6 +8,7 @@ import com.etna.myapi.services.Susers;
 import com.etna.myapi.services.Svideo;
 import com.etna.myapi.utils.Utils;
 
+import lombok.extern.slf4j.Slf4j;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
@@ -45,12 +46,12 @@ public class Cvideo {
     public ResponseEntity<Object> createVideo(@PathVariable(name = "iduser") Long idUser, @RequestParam(name = "name") String name, @RequestPart("source") @Valid @NotNull @NotEmpty MultipartFile source) throws IOException, JSONException {
 
 
-        final var uri = "http://localhost:8081/video";
+        final var uri = "http://encoder:8081/video";
 
         Eusers user = userService.findByUserId(idUser);
         Evideo video = videoService.addVideo(user, name, source);
 
-        String videoPath = System.getProperty("user.dir") + "/src/main/resources/static/" + video.getSource();
+        String videoPath = "./app" + File.separator + "static" + File.separator + video.getSource();
         var root = Paths.get(videoPath);
 
         LinkedMultiValueMap<String, Object> map = new LinkedMultiValueMap<>();

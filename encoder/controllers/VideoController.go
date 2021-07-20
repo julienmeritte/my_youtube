@@ -20,6 +20,8 @@ func SayVideo() {
 
 func GetVideos(c *gin.Context) {
 
+	log.Println("OUIIIII")
+
 	file, err := c.FormFile("file")
 	if err != nil {
 		log.Fatal(err)

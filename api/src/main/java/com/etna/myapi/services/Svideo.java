@@ -17,9 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import ws.schild.jave.*;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
@@ -30,7 +28,7 @@ import java.util.Optional;
 @Service
 public class Svideo {
 
-    private final String videoPath = System.getProperty("user.dir") + "/src/main/resources/static/videos/";
+    private final String videoPath = "./app" + File.separator + "static" + File.separator + "videos" + File.separator;
 
     @Autowired
     private Rvideo videoRepository;
@@ -44,7 +42,7 @@ public class Svideo {
 
     @Transactional
     public Evideo addVideo(Eusers user, String name, MultipartFile source) throws IOException {
-        var root = Paths.get(System.getProperty("user.dir") + "/src/main/resources/static/videos/" + name);
+        var root = Paths.get("./app" + File.separator + "static" + File.separator + "videos" + File.separator + name);
         String namePath;
         File tempFile;
         String pathFile;
@@ -63,7 +61,7 @@ public class Svideo {
                 break;
             }
         }
-        var staticRoot = Paths.get("videos/" + namePath);
+        var staticRoot = Paths.get("videos" + File.separator + namePath);
         var video = new Evideo();
         video.setName(name);
         video.setSource(staticRoot.toString());
@@ -80,7 +78,7 @@ public class Svideo {
     @Transactional
     public Evideo addFormat(Evideo video, String format, MultipartFile source) throws IOException {
         var name = video.getNamePath().replace("base", format);
-        var root = Paths.get(System.getProperty("user.dir") + "/src/main/resources/static/videos/" + name);
+        var root = Paths.get("./app" + File.separator + "static" + File.separator + "videos" + File.separator + name);
         File tempFile = new File(String.valueOf(root));
         if (!tempFile.exists()) {
             Files.copy(source.getInputStream(), root);
@@ -89,7 +87,7 @@ public class Svideo {
         var eformat = new Eformat();
         eformat.setVideo(video);
         eformat.setName(name);
-        eformat.setSource("video/" + name);
+        eformat.setSource("video" + File.separator + name);
         List<Eformat> formats;
         formats = video.getFormats();
         formats.add(eformat);
@@ -264,11 +262,11 @@ public class Svideo {
         video.getFormats().add(eformat);
         videoRepository.save(video);
 
-        var root = Paths.get(System.getProperty("user.dir") + "/src/main/resources/static/videos/" + video.getNamePath());
+        var root = Paths.get("./app" + File.separator + "static" + File.separator + "videos" + File.separator + video.getNamePath());
         var source = new File(root.toString());
         var multimediaObject = new MultimediaObject(source);
         String newNamePath = video.getNamePath().replace("1080", format);
-        var rootBis = Paths.get(System.getProperty("user.dir") + "/src/main/resources/static/videos/" + newNamePath);
+        var rootBis = Paths.get("./app" + File.separator + "static" + File.separator + "videos" + File.separator + newNamePath);
         var target = new File(rootBis.toString());
 
         var videoConverted = new VideoAttributes();
