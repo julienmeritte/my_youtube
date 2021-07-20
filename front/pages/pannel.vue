@@ -98,8 +98,6 @@ export default {
       }
       this.userName = response.data.username;
       this.mail = response.data.email;
-
-      console.log("test : " + response);
     } catch (error) {
       console.log(error);
     }
@@ -112,6 +110,7 @@ export default {
     },
     async updateAccount() {
       let id = sessionStorage.getItem("id");
+      let tokenUser = sessionStorage.getItem("token");
       let url = 'http://localhost:8080/user/' + id + '?';
       url += 'username=' + this.userName;
       if (this.password != "") {
@@ -122,12 +121,16 @@ export default {
       }
       url += '&email' + this.mail;
       try {
-        const response = await this.$axios.$put(url);
+        const response = await this.$axios.$put(url , {
+        headers: {
+          Authorization: "Bearer " + tokenUser
+        }
+      });
         console.log(response);
       } catch (error) {
         console.log(error);
       }
-      location.reload();
+      //location.reload();
     },
     async uploadVideo() {
       try {
@@ -136,7 +139,7 @@ export default {
         const formData = new FormData();
         formData.append("name", this.videoName);
         formData.append("source", this.videoFile);
-        const response = await this.$axios.$post('http://localhost:3000/api/user/' + idUser + '/video', formData, {
+        const response = await this.$axios.$post('http://localhost:8080/api/user/' + idUser + '/video', formData, {
           headers: {
             Authorization: "Bearer " + tokenUser
           }
