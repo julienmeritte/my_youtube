@@ -21,7 +21,6 @@ func SayVideo() {
 
 func GetVideos(c *gin.Context) {
 
-	log.Println("OUIIIII")
 
 	file, err := c.FormFile("file")
 	if err != nil {
@@ -108,7 +107,6 @@ func SendVideoFormat(format int, path string, idVideo string) {
 	} else {
 		fmt.Println(resp.StatusCode)
 	}
-
 	e := os.Remove(path)
 	if e != nil {
 		log.Fatal(e)

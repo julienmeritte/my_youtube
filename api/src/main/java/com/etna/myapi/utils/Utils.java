@@ -76,25 +76,18 @@ public final class Utils {
         List<Eformat> formats = video.getFormats();
         for (Eformat format : formats
              ) {
-            switch (format.getName()) {
-                case "1080":
-                    jsonReponse.put("1080", Paths.get(format.getSource()).toString().replace('\\', '/'));
-                    break;
-                case "720":
-                    jsonReponse.put("720", Paths.get(format.getSource()).toString().replace('\\', '/'));
-                    break;
-                case "480":
-                    jsonReponse.put("480", Paths.get(format.getSource()).toString().replace('\\', '/'));
-                    break;
-                case "360":
-                    jsonReponse.put("360", Paths.get(format.getSource()).toString().replace('\\', '/'));
-                    break;
-                case "240":
-                    jsonReponse.put("240", Paths.get(format.getSource()).toString().replace('\\', '/'));
-                    break;
-                case "144":
-                    jsonReponse.put("144", Paths.get(format.getSource()).toString().replace('\\', '/'));
-                    break;
+            if (format.getName().startsWith("1080")) {
+                jsonReponse.put("1080", Paths.get(format.getSource()).toString().replace('\\', '/'));
+            } else if (format.getName().startsWith("720")) {
+                jsonReponse.put("720", Paths.get(format.getSource()).toString().replace('\\', '/'));
+            } else if (format.getName().startsWith("480")) {
+                jsonReponse.put("480", Paths.get(format.getSource()).toString().replace('\\', '/'));
+            } else if (format.getName().startsWith("360")) {
+                jsonReponse.put("360", Paths.get(format.getSource()).toString().replace('\\', '/'));
+            } else if (format.getName().startsWith("240")) {
+                jsonReponse.put("240", Paths.get(format.getSource()).toString().replace('\\', '/'));
+            } else if (format.getName().startsWith("144")) {
+                jsonReponse.put("144", Paths.get(format.getSource()).toString().replace('\\', '/'));
             }
         }
         return jsonReponse;
