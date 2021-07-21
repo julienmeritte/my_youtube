@@ -18,6 +18,7 @@ services:
       SPRING_JPA_HIBERNATE_DDL_AUTO: create-drop
     networks:
       - backend
+      - frontend
     
   mysqldb:
     image: mysql:8.0.25
@@ -42,9 +43,19 @@ services:
       - api
     networks:
       - backend
+      
+  mailer:
+    build: ./mailer
+    volumes:
+     - .:/mailer
+    network_mode: host
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
 
 volumes:
   mysql-data:
   
 networks:
   backend:
+  frontend:

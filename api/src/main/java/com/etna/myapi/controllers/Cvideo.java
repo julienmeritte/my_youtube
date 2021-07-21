@@ -28,6 +28,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
@@ -45,11 +47,12 @@ public class Cvideo {
             MediaType.APPLICATION_OCTET_STREAM_VALUE})
     public ResponseEntity<Object> createVideo(@PathVariable(name = "iduser") Long idUser, @RequestParam(name = "name") String name, @RequestPart("source") @Valid @NotNull @NotEmpty MultipartFile source) throws IOException, JSONException {
 
-
         final var uri = "http://encoder:8081/video";
 
         Eusers user = userService.findByUserId(idUser);
         Evideo video = videoService.addVideo(user, name, source);
+
+        // Encoder
 
         String videoPath = "./app" + File.separator + "static" + File.separator + video.getSource();
         var root = Paths.get(videoPath);
@@ -65,6 +68,17 @@ public class Cvideo {
         builder.queryParam("idvideo", video.getIdVideo());
         var restTemplate = new RestTemplate();
         restTemplate.exchange(builder.build().encode().toUri(), HttpMethod.POST, requestEntity, String.class);
+
+        // Mail
+
+        var urlBis = "http://172.17.0.1:8082/video";
+
+        Map<String, String> params = new HashMap<>();
+        params.put("mail", user.getEmail());
+        params.put("code", "END");
+
+        var restTemplateBis = new RestTemplate();
+        restTemplateBis.postForEntity( urlBis, params, String.class );
 
         var jsonResponse = new JSONObject();
         jsonResponse.put("message", "OK");
