@@ -75,6 +75,7 @@
 export default {
   data() {
     return {
+      apiUrl: process.env.apiUrl,
       currentVideo: "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
       pseudo: "",
       password: "",
@@ -88,7 +89,7 @@ export default {
     let idUser = sessionStorage.getItem("id");
     let tokenUser = sessionStorage.getItem("token");
     try {
-      const response = await this.$axios.$get('http://localhost:3000/api/user/' + idUser, {
+      const response = await this.$axios.$get(this.apiUrl + '/user/' + idUser, {
         headers: {
           Authorization: "Bearer " + tokenUser
         }
@@ -109,28 +110,32 @@ export default {
       this.videoFile = this.$refs.file.files[0];
     },
     async updateAccount() {
-      let id = sessionStorage.getItem("id");
-      let tokenUser = sessionStorage.getItem("token");
-      let url = 'http://localhost:8080/user/' + id + '?';
-      url += 'username=' + this.userName;
-      if (this.password != "") {
-        url += '&password=' + this.password;
-      }
-      if (this.pseudo != "") {
-        url += '&pseudo=' + this.pseudo;
-      }
-      url += '&email' + this.mail;
       try {
-        const response = await this.$axios.$put(url , {
-        headers: {
-          Authorization: "Bearer " + tokenUser
+        const formData = new FormData();
+        let id = sessionStorage.getItem("id");
+        let tokenUser = sessionStorage.getItem("token");
+        if (this.userName != "") {
+          formData.append("username", this.userName);
         }
-      });
+        if (this.password != "") {
+          formData.append("password", this.password);
+        }
+        if (this.pseudo != "") {
+          formData.append("pseudo", this.pseudo);
+        }
+        if (this.mail != "") {
+          formData.append("email", this.mail);
+        }
+        const response = await this.$axios.$put(this.apiUrl + '/user/' + id, formData, {
+          headers: {
+            Authorization: "Bearer " + tokenUser
+          }
+        });
         console.log(response);
       } catch (error) {
         console.log(error);
       }
-      //location.reload();
+      location.reload();
     },
     async uploadVideo() {
       try {
@@ -139,7 +144,7 @@ export default {
         const formData = new FormData();
         formData.append("name", this.videoName);
         formData.append("source", this.videoFile);
-        const response = await this.$axios.$post('http://localhost:8080/api/user/' + idUser + '/video', formData, {
+        const response = await this.$axios.$post(this.apiUrl + '/user/' + idUser + '/video', formData, {
           headers: {
             Authorization: "Bearer " + tokenUser
           }

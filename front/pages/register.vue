@@ -37,6 +37,7 @@
 export default {
     data() {
         return {
+            apiUrl: process.env.apiUrl,
             userName: "",
             password: "",
             mail: "",
@@ -46,14 +47,14 @@ export default {
     methods: {
             async registerCall(e) {
                 try {
-                    const responseR = await this.$axios.$post('http://localhost:8080/user?username=' + this.userName + '&password=' + this.password + '&pseudo=' + this.pseudo + '&email=' + this.mail);
+                    const responseR = await this.$axios.$post(this.apiUrl + '/user?username=' + this.userName + '&password=' + this.password + '&pseudo=' + this.pseudo + '&email=' + this.mail);
                     this.responseR = responseR;
                 } catch (error) {
                     alert("please enter/check all credantials or user already exist");
                     location.reload();
                 }
                 try {
-                    const response = await this.$axios.$post('http://localhost:8080/auth?login=' + this.userName + '&password=' + this.password);
+                    const response = await this.$axios.$post(this.apiUrl + '/auth?login=' + this.userName + '&password=' + this.password);
                     this.response = response;
                     sessionStorage.setItem("username" , this.response ["data"]["user"]["username"]);
                     sessionStorage.setItem("id" , this.response ["data"]["user"]["id"]);

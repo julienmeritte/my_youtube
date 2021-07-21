@@ -29,6 +29,7 @@
 export default {
   data() {
     return {
+      apiUrl: process.env.apiUrl,
       userName: "",
       password: ""
     }
@@ -36,7 +37,7 @@ export default {
   methods: {
     async loginCall() {
       try {
-        const response = await this.$axios.$post('http://localhost:3000/api/auth?login=' + this.userName + '&password=' + this.password);
+        const response = await this.$axios.$post(this.apiUrl + '/auth?login=' + this.userName + '&password=' + this.password);
         this.response = response;
         sessionStorage.setItem("username", this.response.data.user.username);
         sessionStorage.setItem("id", this.response.data.user.id);
