@@ -24,7 +24,6 @@ services:
     
   mysqldb:
     image: mysql:8.0.25
-    platform: linux/x86_64
     ports:
       - "3306:3306"
     restart: always
@@ -48,12 +47,28 @@ services:
       
   mailer:
     build: ./mailer
+    ports:
+      - "8082:8082"
     volumes:
      - .:/mailer
-    network_mode: host
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+    networks:
+      - backend
+    #network_mode: host
+    #extra_hosts:
+    #  - "host.docker.internal:host-gateway"
 
+      
+  postfix:
+    image: juanluisbaptiste/postfix:latest
+    expose:
+      - "25"
+    env_file:
+      - .env
+    restart: always
+    volumes:
+      - "/etc/localtime:/etc/localtime:ro"
+    networks:
+      - backend
 
   front:
     build: ./front
