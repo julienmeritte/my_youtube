@@ -18,9 +18,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @CrossOrigin(origins = "*", allowedHeaders = "*")
@@ -113,6 +116,14 @@ public class Cusers {
         if (user != null) {
             if (password != null) {
                 user.setPassword(bcryptEncoder.encode(password));
+                var urlBis = "http://172.17.0.1:8082/password";
+
+                Map<String, String> params = new HashMap<>();
+                params.put("mail", user.getEmail());
+                params.put("code", "CHANGED");
+
+                var restTemplateBis = new RestTemplate();
+                restTemplateBis.postForEntity( urlBis, params, String.class );
             }
             if (email != null) {
                 user.setEmail(email);

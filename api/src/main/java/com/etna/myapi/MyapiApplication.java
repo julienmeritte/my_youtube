@@ -35,7 +35,7 @@ public class MyapiApplication implements CommandLineRunner {
         var admin = new Eusers();
         admin.setUsername("admin");
         admin.setPassword("admin");
-        admin.setEmail("admin@email.com");
+        admin.setEmail("meritt_j@etna-alternance.net");
         admin.setRoles(new ArrayList<>(Collections.singletonList(Erole.ADMIN)));
 
         userService.createUser(admin);
