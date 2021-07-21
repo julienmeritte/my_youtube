@@ -48,11 +48,11 @@ public class Svideo {
         String pathFile;
         for (var i = 0; true; i++) {
             if (i == 0) {
-                pathFile = videoPath + "base" + name;
-                namePath = "base" + name;
+                pathFile = videoPath + "base" + name+ ".mp4";
+                namePath = "base" + name+ ".mp4";
             } else {
-                pathFile = videoPath + "base" + name + i;
-                namePath = "base" + name + i;
+                pathFile = videoPath + "base" + name + i+ ".mp4";
+                namePath = "base" + name + i + ".mp4";
             }
             root = Paths.get(pathFile);
             tempFile = new File(String.valueOf(root));

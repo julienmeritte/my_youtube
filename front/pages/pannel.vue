@@ -59,7 +59,7 @@
             <div class="col-9 m-5 container" v-for="items in videoList" :key="items.videoName">
               <div class="d-inline p-2 d-flex justify-content-center">
                 <img class="w-100 h-100 p-2 img-fluid img-thumbnail border-0" :src="`${items.videoLink}`">
-                <p class="px-5">{{items.videoName}}</p>
+                <p class="px-5" v-on:click="videoRedirect(items.videoId)">{{items.videoName}}</p>
                 
                 <button type="button" class="btn btn-danger w-50 h-100" :id="items.videoId" v-on:click="removeVideo(items.videoId)">remove</button>
               </div>
@@ -162,7 +162,6 @@ export default {
         let tokenUser = sessionStorage.getItem("token");
         const formData = new FormData();
         this.videoName = this.changeChar(this.videoName);
-        this.videoName = this.videoName + ".mp4";
         formData.append("name", this.videoName);
         formData.append("source", this.videoFile);
         const response = await this.$axios.$post(this.apiUrl + '/user/' + idUser + '/video', formData, {
@@ -203,6 +202,10 @@ export default {
         str += array[index];
       }
       return str;
+    },
+    videoRedirect(id) {
+      sessionStorage.setItem("idVideo" , id);
+      this.$router.push({path: "/video"})
     }
   }
 }
