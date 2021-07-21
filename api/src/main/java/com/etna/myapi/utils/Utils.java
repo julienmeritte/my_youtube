@@ -60,6 +60,7 @@ public final class Utils {
 
     public static JSONObject jsonifyVideo(Evideo video, Eusers user) throws JSONException {
         var jsonReponse = new JSONObject();
+        jsonReponse.put("name", video.getName());
         jsonReponse.put("id", video.getIdVideo());
         jsonReponse.put("source", Paths.get(video.getSource()).toString().replace('\\', '/'));
         jsonReponse.put("created_at", TrimTooLongLocalDateTime(video.getCreated_at()));

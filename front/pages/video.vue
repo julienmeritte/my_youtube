@@ -58,7 +58,7 @@
 export default {
     data() {
         return {
-            currentVideo: "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+            currentVideo: "http://localhost:8080/videos/baseTest.mp4",
             tittleVideo: "video test",
             videoList: [] , 
             commentList: [],

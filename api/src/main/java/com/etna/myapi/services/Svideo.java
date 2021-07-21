@@ -87,7 +87,7 @@ public class Svideo {
         var eformat = new Eformat();
         eformat.setVideo(video);
         eformat.setName(name);
-        eformat.setSource("video" + File.separator + name);
+        eformat.setSource("videos" + File.separator + name);
         List<Eformat> formats;
         formats = video.getFormats();
         formats.add(eformat);

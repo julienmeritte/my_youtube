@@ -18,7 +18,7 @@
                 </div>
                 <div class="form-group">
                   <label for="username">Name of video</label>
-                  <input type="text" class="form-control" id="videoName" v-model="videoName" placeholder="Username">
+                  <input type="text" class="form-control" id="videoName" v-model="videoName" placeholder="name">
                 </div>
                 <div class="form-group">
                   <label for="video">Video file</label>
@@ -55,14 +55,14 @@
             <br>
           </div>
           <br>
-          <div class="row d-flex justify-content-center">
-            <div class="col-4 m-5" v-for="items in 15" :key="items.videoName">
-              <div class="m-3 d-flex flex-row">
-                <img class="w-100 h-100 p-2 img-fluid img-thumbnail border-0" :src="`${currentVideo}`">
-                <p class="p-2">test</p>
-                <button type="button" class="btn btn-danger"  v-on:click="removeVideo">remove</button>
+          <div class="row d-flex">
+            <div class="col-9 m-5 container" v-for="items in videoList" :key="items.videoName">
+              <div class="d-inline p-2 d-flex justify-content-center">
+                <img class="w-100 h-100 p-2 img-fluid img-thumbnail border-0" :src="`${items.videoLink}`">
+                <p class="px-5">{{items.videoName}}</p>
+                
+                <button type="button" class="btn btn-danger w-50 h-100" :id="items.videoId" v-on:click="removeVideo(items.videoId)">remove</button>
               </div>
-
             </div>
           </div>
         </div>
@@ -76,16 +76,18 @@ export default {
   data() {
     return {
       apiUrl: process.env.apiUrl,
-      currentVideo: "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+      videoList: [],
+      videoName: "",
       pseudo: "",
       password: "",
       mail: "",
       userName: "",
       videoFile: '',
-      videoName: "",
     }
   },
   async mounted() {
+
+    //get user info //
     let idUser = sessionStorage.getItem("id");
     let tokenUser = sessionStorage.getItem("token");
     try {
@@ -102,11 +104,29 @@ export default {
     } catch (error) {
       console.log(error);
     }
-
+    // end get user info //
+    // get video list //
+    let arrayID = [];
+    let json = [];
+    try {
+      const response = await this.$axios.$get(this.apiUrl + '/user/' + idUser + '/videos?perPage=100', {
+        headers: {
+          Authorization: "Bearer " + tokenUser
+        }
+      });
+      response.data.forEach(element => {
+        json["videoId"] = element.id;
+        json["videoName"] = element.name.replace('.mp4' , '');
+        json["videoLink"] = this.apiUrl + '/' + element.source;
+        this.videoList.push(json);
+        json = [];
+      });
+    } catch (error) {
+      console.log(error);
+    }
   },
   methods: {
     file() {
-      console.log(event.target.files);
       this.videoFile = this.$refs.file.files[0];
     },
     async updateAccount() {
@@ -131,7 +151,6 @@ export default {
             Authorization: "Bearer " + tokenUser
           }
         });
-        console.log(response);
       } catch (error) {
         console.log(error);
       }
@@ -142,6 +161,8 @@ export default {
         let idUser = sessionStorage.getItem("id");
         let tokenUser = sessionStorage.getItem("token");
         const formData = new FormData();
+        this.videoName = this.changeChar(this.videoName);
+        this.videoName = this.videoName + ".mp4";
         formData.append("name", this.videoName);
         formData.append("source", this.videoFile);
         const response = await this.$axios.$post(this.apiUrl + '/user/' + idUser + '/video', formData, {
@@ -149,16 +170,40 @@ export default {
             Authorization: "Bearer " + tokenUser
           }
         });
-        console.log("test : " + response);
       } catch (error) {
         console.log(error);
       }
-      console.log("c'est parti pour l'upload");
+      alert("votre vidéo est en cours d'upload");
+      location.reload();
     },
-    removeVideo() {
-      console.log("je remove la video");
+    async removeVideo(id) {
+      console.log(id);
+      try {
+        let idUser = sessionStorage.getItem("id");
+        let tokenUser = sessionStorage.getItem("token");
+        const response = await this.$axios.$delete(this.apiUrl + '/video/' + id, {
+          headers: {
+            Authorization: "Bearer " + tokenUser
+          }
+        });
+      } catch (error) {
+        console.log(error);
+      }
+      location.reload();
+    },
+    changeChar(string) {
+      let array = string.split('');
+      let str = '';
+      for (let index = 0; index < array.length; index++) {
+        if (array[index] == ' ') {
+          array[index] = '-';
+        }
+      }
+      for (let index = 0; index < array.length; index++) {
+        str += array[index];
+      }
+      return str;
     }
-
   }
 }
 </script>
