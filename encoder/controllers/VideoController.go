@@ -10,6 +10,7 @@ import (
 	"mime/multipart"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 )
@@ -31,6 +32,11 @@ func GetVideos(c *gin.Context) {
 	log.Println(idVideo)
 	log.Println(file.Filename)
 	path := "temp/" + file.Filename
+
+	err = RemoveContents("./temp")
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	// TODO delete this test function
 	err = c.SaveUploadedFile(file, path)
@@ -73,11 +79,25 @@ func GetVideos(c *gin.Context) {
 	}
 }
 
+func RemoveContents(dir string) error {
+	files, err := filepath.Glob(filepath.Join(dir, "*"))
+	if err != nil {
+		return err
+	}
+	for _, file := range files {
+		err = os.RemoveAll(file)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func SendVideoFormat(format int, path string, idVideo string) {
 	extraParams := map[string]string{
 		"format": strconv.Itoa(format),
 	}
-	request, err := NewfileUploadRequest("http://localhost:8080/format/"+idVideo, extraParams, "source", path)
+	request, err := NewfileUploadRequest("http://api:8080/format/"+idVideo, extraParams, "source", path)
 	if err != nil {
 		log.Fatal(err)
 	}
