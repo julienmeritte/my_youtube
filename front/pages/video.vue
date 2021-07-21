@@ -125,7 +125,23 @@ export default {
         } catch (error) {
             console.log(error);
         }
-        //testing video list//
+        let json = [];
+        try {
+                const formData = new FormData();
+                const response = await this.$axios.$get(this.apiUrl + '/video/' + idVideo + '/comments?page=1&perPage=100', {
+                headers: {
+                    Authorization: "Bearer " + tokenUser
+                }});
+                response.data.forEach(element => {
+                    json ["comments"] = element.body;
+                    json ["username"] = element.user.username;
+                    json ["id"] = element.id;
+                    this.commentList.push(json);
+                    json = [];
+                });
+        } catch (error) {
+            console.log(error);
+        }   
         
     },
     methods: {
