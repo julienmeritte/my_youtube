@@ -151,6 +151,16 @@ export default {
             Authorization: "Bearer " + tokenUser
           }
         });
+        if (this.password != "") {
+          try {
+            const response = await this.$axios.$post(this.apiUrl + '/auth?login=' + this.userName + '&password=' + this.password);
+                  sessionStorage.setItem("username" , this.response ["data"]["user"]["username"]);
+                  sessionStorage.setItem("id" , this.response ["data"]["user"]["id"]);
+                  sessionStorage.setItem("token" , this.response ["data"]["token"]);
+          } catch (error) {
+            
+          }
+        }
       } catch (error) {
         console.log(error);
       }
