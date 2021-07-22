@@ -223,11 +223,12 @@ public class Svideo {
 
                 jsonResponse.put("message", "OK");
                 jsonResponse.put("data", Utils.jsonifyVideo(video, video.getUser()));
-                /*var urlSearch = "http://es01:9200/youtube/video/" + video.getIdVideo();
+
+                var urlSearch = "http://es01:9200/youtube/video/" + video.getIdVideo();
 
                 Map<String, Object> mapSearch = new HashMap<>();
                 mapSearch.put("name", video.getName());
-                mapSearch.put("user", user.getUsername());
+                mapSearch.put("user", video.getUser().getUsername());
                 mapSearch.put("date", video.getCreated_at().toString());
                 mapSearch.put("id", video.getIdVideo());
                 mapSearch.put("source", video.getSource());
@@ -240,7 +241,7 @@ public class Svideo {
 
                 HttpEntity<Map<String, Object>> entity = new HttpEntity<>(mapSearch, headersSearch);
 
-                restTemplateSearch.put( urlSearch, entity, String.class);*/
+                restTemplateSearch.put( urlSearch, entity, String.class);
             } else {
                 throw new CustomResourceException();
             }

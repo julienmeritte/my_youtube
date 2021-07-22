@@ -70,12 +70,12 @@ export default {
 
   proxy: {
     '/api/': {
-      target: 'http://localhost:8080/',
+      target: 'http://api:8080/',
       pathRewrite: { "^/api": "" },
       changeOrigin: true,
     },
     '/elastic/': {
-      target: 'http://localhost:9200/',
+      target: 'http://es01:9200/',
       pathRewrite: { "^/elastic": "" },
       changeOrigin: true,
     },
