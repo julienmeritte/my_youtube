@@ -58,7 +58,7 @@
           <div class="row d-flex">
             <div class="col-9 m-5 container" v-for="items in videoList" :key="items.videoName">
               <div class="d-inline p-2 d-flex justify-content-center">
-                <img class="w-100 h-100 p-2 img-fluid img-thumbnail border-0" :src="`${items.videoLink}`">
+                <img class="w-100 h-100 p-2 img-fluid img-thumbnail border-0" :src="`${items.videoImg}`">
                 <p class="px-5" v-on:click="videoRedirect(items.videoId)">{{items.videoName}}</p>
 
                 <button type="button" class="btn btn-danger w-50 h-100" :id="items.videoId" v-on:click="removeVideo(items.videoId)">remove</button>
@@ -118,8 +118,10 @@ export default {
         json["videoId"] = element.id;
         json ["videoImg"] = this.apiUrl + '/images/base' + element.name + '.jpg';
         json["videoLink"] = this.apiUrl + '/' + element.source;
+        json["videoName"] = element.name;
         this.videoList.push(json);
         json = [];
+        
       });
     } catch (error) {
       console.log(error);

@@ -67,16 +67,16 @@ services:
     networks:
       - backend
 
-  front:
-    build: ./front
-    restart: always
-    ports:
-      - "3000:3000"
-    command: "npm run start"
-    depends_on:
-      - api
-    networks:
-      - frontend
+#  front:
+#    build: ./front
+#   restart: always
+#   ports:
+#     - "3000:3000"
+#   command: "npm run start"
+#   depends_on:
+#     - api
+#   networks:
+#     - frontend
 
   es01:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.13.4
@@ -99,6 +99,7 @@ services:
     networks:
       - elastic
       - frontend
+
   es02:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.13.4
     container_name: es02
@@ -118,6 +119,7 @@ services:
     networks:
       - elastic
       - frontend
+      
   es03:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.13.4
     container_name: es03

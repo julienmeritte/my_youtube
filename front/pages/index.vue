@@ -59,27 +59,18 @@ export default {
       this.searchValue = value.search.value;
       try {
         console.log(this.searchValue);
-        if (this.searchValue === "") {
-          const response = await this.$axios.$get(this.elasticUrl + '/youtube/video/_search');
-          response.hits.hits.forEach(element => {
-            let tmp = element ["_source"];
-            json ["videoName"] = tmp.name;
-            json ["videoImg"] = this.apiUrl + '/images/base' + element.name + '.jpg';
-            json ["videoId"] = tmp.id;
-            this.videoList.push(json);
-            json = [];
+        let parm = '{"query": {"wildcard": {"title": {"value": "'+ this.searchValue +'*"}}}}';
+        const response = await this.$axios.$get(this.elasticUrl + '/youtube/video/_search' , parm);
+        console.log(response);
+        response.hits.hits.forEach(element => {
+          let tmp = element ["_source"];
+          json ["videoName"] = tmp.name;
+          json ["videoImg"] = this.apiUrl + '/images/base' + element.name + '.jpg';
+          json ["videoId"] = tmp.id;
+          this.videoList.push(json);
+          json = [];
+          
           });
-        } else {
-          const response = await this.$axios.$get(this.elasticUrl + '/youtube/video/_search?q=name:' + this.searchValue);
-          response.hits.hits.forEach(element => {
-            let tmp = element ["_source"];
-            json ["videoName"] = tmp.name;
-            json ["videoImg"] = this.apiUrl + '/images/base' + element.name + '.jpg';
-            json ["videoId"] = tmp.id;
-            this.videoList.push(json);
-            json = [];
-          });
-        }
       } catch (error) {
 
       }
