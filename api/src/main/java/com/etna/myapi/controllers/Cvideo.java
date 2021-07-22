@@ -89,8 +89,8 @@ public class Cvideo {
         mapSearch.put("user", user.getUsername());
         mapSearch.put("date", video.getCreated_at().toString());
         mapSearch.put("id", video.getIdVideo());
-        /*mapSearch.put("source", video.getSource());
-        mapSearch.put("image", video.getImage());*/
+        mapSearch.put("source", video.getSource());
+        mapSearch.put("image", video.getImage());
 
         var restTemplateSearch = new RestTemplate();
 
