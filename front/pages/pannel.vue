@@ -56,10 +56,10 @@
           </div>
           <br>
           <div class="row d-flex">
-            <div class="col-9 m-5 container" v-for="items in videoList" :key="items.videoName">
+            <div class="col-9 m-5 container" v-for="items in videoList" :key="items.videoId">
               <div class="d-inline p-2 d-flex justify-content-center">
-                <img class="w-100 h-100 p-2 img-fluid img-thumbnail border-0" :src="`${items.videoImg}`">
-                <p class="px-5" v-on:click="videoRedirect(items.videoId)">{{items.videoName}}</p>
+                <img class="w-100 h-100 p-2 img-fluid img-thumbnail border-0" v-on:click="videoRedirect(items.videoId)" :src="`${items.videoImg}`">
+                <p class="px-5  font-weight-bold h3" v-on:click="videoRedirect(items.videoId)">{{items.videoName}}</p>
 
                 <button type="button" class="btn btn-danger w-50 h-100" :id="items.videoId" v-on:click="removeVideo(items.videoId)">remove</button>
               </div>
@@ -116,7 +116,7 @@ export default {
       });
       response.data.forEach(element => {
         json["videoId"] = element.id;
-        json ["videoImg"] = this.apiUrl + '/images/base' + element.name + '.jpg';
+        json ["videoImg"] = this.apiUrl + '/' + element.image;
         json["videoLink"] = this.apiUrl + '/' + element.source;
         json["videoName"] = element.name;
         this.videoList.push(json);
