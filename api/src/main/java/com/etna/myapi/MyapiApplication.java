@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.web.client.RestTemplate;
 
 
 @SpringBootApplication
@@ -47,6 +48,11 @@ public class MyapiApplication implements CommandLineRunner {
         client.setRoles(new ArrayList<>(Collections.singletonList(Erole.USER)));
 
         userService.createUser(client);
+
+        var urlSearch = "http://elasticsearch:9200/_all";
+
+        var restTemplateSearch = new RestTemplate();
+        restTemplateSearch.delete(urlSearch);
 
         try {
             var root = Paths.get("./app" + File.separator + "static" + File.separator + "videos" + File.separator);

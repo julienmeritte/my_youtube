@@ -71,7 +71,7 @@ public class Cvideo {
 
         // Mail
 
-        var urlBis = "http://172.17.0.1:8082/video";
+        var urlBis = "http://mailer:8082/video";
 
         Map<String, String> params = new HashMap<>();
         params.put("mail", user.getEmail());
@@ -79,6 +79,26 @@ public class Cvideo {
 
         var restTemplateBis = new RestTemplate();
         restTemplateBis.postForEntity( urlBis, params, String.class );
+
+        // elasticsearch
+
+        var urlSearch = "http://elasticsearch:9200/youtube/video/" + video.getIdVideo();
+
+        Map<String, Object> mapSearch = new HashMap<>();
+        mapSearch.put("name", video.getName());
+        mapSearch.put("user", user.getUsername());
+        mapSearch.put("date", video.getCreated_at().toString());
+        mapSearch.put("id", video.getIdVideo());
+        mapSearch.put("source", video.getSource());
+
+        var restTemplateSearch = new RestTemplate();
+
+        var headersSearch = new HttpHeaders();
+        headersSearch.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(mapSearch, headersSearch);
+
+        restTemplateSearch.put( urlSearch, entity, String.class);
 
         var jsonResponse = new JSONObject();
         jsonResponse.put("message", "OK");
@@ -173,6 +193,12 @@ public class Cvideo {
     @DeleteMapping("video/{idvideo}")
     public ResponseEntity<Object> deleteUser(@PathVariable(name = "idvideo") Long id) {
         videoService.deleteVideo(id);
+
+        var urlSearch = "http://elasticsearch:9200/youtube/video/" + id;
+
+        var restTemplateSearch = new RestTemplate();
+        restTemplateSearch.delete(urlSearch);
+
         return ResponseEntity.status(201).body("");
     }
 }
