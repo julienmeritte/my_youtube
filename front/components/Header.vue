@@ -9,11 +9,7 @@
 
         <!-- Right aligned nav items -->
         <b-navbar-nav class="ml-auto">
-          <b-nav-form>
-            <b-form-input size="sm" class="mr-sm-2" placeholder="Search" id="search"
-                          @input="startSearching"></b-form-input>
-            <b-button size="sm" class="my-2 my-sm-0" v-on:click="startSearching">Search</b-button>
-          </b-nav-form>
+          
 
           <b-nav-item-dropdown right>
             <!-- Using 'button-content' slot -->
@@ -52,10 +48,6 @@ export default {
         }
     },
     methods: {
-        startSearching(e) {
-            let test = {search};
-            console.log(test.search.value);
-        },
         disconnect() {
             sessionStorage.clear();
            this.$router.push({path: "/"});
