@@ -3,7 +3,6 @@ from flask_restx import reqparse
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-import os
 
 app = Flask(__name__)
 
@@ -26,7 +25,8 @@ def video():
             content = "Hi,\n\nWe are happy to inform you that your last video is now fully available on our website.\n\nCongratulations."
             text = MIMEText(content, 'plain')
             message.attach(text)
-            s = smtplib.SMTP('localhost')
+            s = smtplib.SMTP()
+            s.connect('postfix', 25)
             s.sendmail(from_mail, to_mail, message.as_string())
             s.quit()
         return {
@@ -52,7 +52,8 @@ def password():
             content = "Hi,\n\nWe are happy to inform you that your password got successfully changed."
             text = MIMEText(content, 'plain')
             message.attach(text)
-            s = smtplib.SMTP('localhost')
+            s = smtplib.SMTP()
+            s.connect('postfix', 25)
             s.sendmail(from_mail, to_mail, message.as_string())
             s.quit()
         return {
