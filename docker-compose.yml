@@ -9,6 +9,8 @@ services:
     ports:
       - "8080:8080"
     restart: always
+    expose:
+      - 8080
     depends_on:
       - mysqldb
     environment:
@@ -51,6 +53,20 @@ services:
     network_mode: host
     extra_hosts:
       - "host.docker.internal:host-gateway"
+
+
+  front:
+    build: ./front
+    container_name: my_youtube_front
+    restart: always
+    ports:
+      - "8085:3000"
+    command: "npm run start"
+    depends_on:
+      - api
+    networks:
+      - frontend
+      - backend
 
 
 volumes:
