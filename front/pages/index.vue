@@ -40,7 +40,7 @@ export default {
     try {
       const response = await this.$axios.$get(this.apiUrl + '/videos?perPage=100');
       response.data.forEach(element => {
-        json ["videoName"] = element.name;
+        json ["videoName"] = element.name.replace("_", " ");
         json ["videoImg"] = this.apiUrl + '/' + element.image;
         json ["videoId"] = element.id;
         this.videoList.push(json);
@@ -66,7 +66,7 @@ export default {
            const response = await this.$axios.$get(this.elasticUrl + '/youtube/video/_search');
            response.hits.hits.forEach(element => {
               let tmp = element ["_source"];
-              json ["videoName"] = tmp.name;
+              json ["videoName"] = tmp.name.replace("_", " ");
               json ["videoImg"] = this.apiUrl + '/' + tmp.image;
               json ["videoId"] = tmp.id;
               this.videoList.push(json);
@@ -77,7 +77,7 @@ export default {
            const response = await this.$axios.$get(this.elasticUrl + '/youtube/video/_search?q=' + this.searchValue + '*');
             response.hits.hits.forEach(element => {
               let tmp = element ["_source"];
-              json ["videoName"] = tmp.name;
+              json ["videoName"] = tmp.name.replace("_", " ");
               json ["videoImg"] = this.apiUrl + '/' + tmp.image;
               json ["videoId"] = tmp.id;
               this.videoList.push(json);

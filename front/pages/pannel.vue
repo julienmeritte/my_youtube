@@ -118,7 +118,7 @@ export default {
         json["videoId"] = element.id;
         json ["videoImg"] = this.apiUrl + '/' + element.image;
         json["videoLink"] = this.apiUrl + '/' + element.source;
-        json["videoName"] = element.name;
+        json["videoName"] = element.name.replace("_", " ");
         this.videoList.push(json);
         json = [];
         

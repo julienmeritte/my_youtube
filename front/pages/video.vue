@@ -86,7 +86,7 @@ export default {
             console.log(response)
             let json = [];
             response.data.forEach(element => {
-                json["videoName"] = element.name.replace('_' , ' ');
+                json["videoName"] = element.name.replace("_", " ");
                 json["videoImg"] = this.apiUrl + '/' + element.image;
                 json["videoLink"] = element.id;
                 this.videoList.push(json);
@@ -95,6 +95,7 @@ export default {
             response.data.forEach(element => {
                 if (element.id == idVideo) {
                     this.tittleVideo = element.name.replace('.mp4' , '');
+                    this.tittleVideo = this.tittleVideo.replace("_", " ");
                     if (quality == null) {
                         this.currentVideo = this.apiUrl + '/' + element.source;
                     }
