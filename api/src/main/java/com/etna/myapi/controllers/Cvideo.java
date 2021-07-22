@@ -82,14 +82,15 @@ public class Cvideo {
 
         // elasticsearch
 
-        var urlSearch = "http://elasticsearch:9200/youtube/video/" + video.getIdVideo();
+        var urlSearch = "http://es01:9200/youtube/video/" + video.getIdVideo();
 
         Map<String, Object> mapSearch = new HashMap<>();
         mapSearch.put("name", video.getName());
         mapSearch.put("user", user.getUsername());
         mapSearch.put("date", video.getCreated_at().toString());
         mapSearch.put("id", video.getIdVideo());
-        mapSearch.put("source", video.getSource());
+        /*mapSearch.put("source", video.getSource());
+        mapSearch.put("image", video.getImage());*/
 
         var restTemplateSearch = new RestTemplate();
 
@@ -171,7 +172,12 @@ public class Cvideo {
     }
 
     @PutMapping(value = "video/{idvideo}")
-    public ResponseEntity<Object> updateVideo(@PathVariable(name = "idvideo") Long idVideo, @RequestParam(name = "name", required = false) String name, @RequestParam(name = "user", required = false) String idUser) throws JSONException {
+    public ResponseEntity<Object> updateVideo(@PathVariable(name = "idvideo") Long idVideo, @RequestParam(name = "name", required = false) String name, @RequestParam(name = "user", required = false) String idUser, @RequestPart(value = "source", required = false) MultipartFile source) throws JSONException {
+        if (source != null) {
+            System.out.println("Source reçue");
+        } else {
+            System.out.println("No source provided");
+        }
         long idUserConverted;
         Eusers user = null;
         if (idUser != null) {
@@ -186,7 +192,8 @@ public class Cvideo {
             }
         }
 
-        var jsonResponse = videoService.updateVideoByUserId(user, name, idVideo);
+        var jsonResponse = videoService.updateVideoByUserId(user, name, idVideo, source);
+
         return ResponseEntity.status(201).body(jsonResponse.toString());
     }
 
@@ -194,7 +201,7 @@ public class Cvideo {
     public ResponseEntity<Object> deleteUser(@PathVariable(name = "idvideo") Long id) {
         videoService.deleteVideo(id);
 
-        var urlSearch = "http://elasticsearch:9200/youtube/video/" + id;
+        var urlSearch = "http://es01:9200/youtube/video/" + id;
 
         var restTemplateSearch = new RestTemplate();
         restTemplateSearch.delete(urlSearch);

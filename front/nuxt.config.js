@@ -64,7 +64,8 @@ export default {
 
   env: {
     baseUrl: process.env.BASE_URL || 'http://localhost:3000',
-    apiUrl: 'http://localhost:3000/api'
+    apiUrl: 'http://localhost:3000/api',
+    elasticUrl: 'http://localhost:3000/elastic'
   },
 
   proxy: {
@@ -72,7 +73,12 @@ export default {
       target: 'http://api:8080/',
       pathRewrite: { "^/api": "" },
       changeOrigin: true,
-    }
+    },
+    '/elastic/': {
+      target: 'http://es01:9200/',
+      pathRewrite: { "^/elastic": "" },
+      changeOrigin: true,
+    },
   },
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {

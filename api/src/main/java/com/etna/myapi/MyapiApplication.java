@@ -49,14 +49,16 @@ public class MyapiApplication implements CommandLineRunner {
 
         userService.createUser(client);
 
-        var urlSearch = "http://elasticsearch:9200/_all";
+        var urlSearch = "http://es01:9200/_all";
 
         var restTemplateSearch = new RestTemplate();
         restTemplateSearch.delete(urlSearch);
 
         try {
-            var root = Paths.get("./app" + File.separator + "static" + File.separator + "videos" + File.separator);
-            FileUtils.cleanDirectory(new File(root.toString()));
+            var rootV = Paths.get("./app" + File.separator + "static" + File.separator + "videos" + File.separator);
+            var rootI = Paths.get("./app" + File.separator + "static" + File.separator + "images" + File.separator);
+            FileUtils.cleanDirectory(new File(rootV.toString()));
+            FileUtils.cleanDirectory(new File(rootI.toString()));
         } catch (Exception e) {
 
         }

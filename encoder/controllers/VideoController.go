@@ -49,6 +49,8 @@ func GetVideos(c *gin.Context) {
 
 	log.Println("Quality: ", quality)
 
+	go handleThumbnail(path, idVideo)
+
 	switch quality {
 	case 1080:
 		go handle240(path, idVideo)
@@ -113,6 +115,24 @@ func SendVideoFormat(format int, path string, idVideo string) {
 	}
 }
 
+func SendThumbnail(path string, idVideo string) {
+	request, err := NewfileUploadThumbnail("http://api:8080/video/"+idVideo, "source", path)
+	if err != nil {
+		log.Fatal(err)
+	}
+	client := &http.Client{}
+	resp, err := client.Do(request)
+	if err != nil {
+		log.Fatal(err)
+	} else {
+		fmt.Println(resp.StatusCode)
+	}
+	e := os.Remove(path)
+	if e != nil {
+		log.Fatal(e)
+	}
+}
+
 func NewfileUploadRequest(uri string, params map[string]string, paramName, path string) (*http.Request, error) {
 	file, err := os.Open(path)
 	if err != nil {
@@ -148,6 +168,45 @@ func NewfileUploadRequest(uri string, params map[string]string, paramName, path 
 	request.Header.Add("Content-Type", writer.FormDataContentType())
 
 	return request, nil
+}
+
+func NewfileUploadThumbnail(uri string, paramName, path string) (*http.Request, error) {
+	file, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	fileContents, err := ioutil.ReadAll(file)
+	if err != nil {
+		return nil, err
+	}
+	fi, err := file.Stat()
+	if err != nil {
+		return nil, err
+	}
+	file.Close()
+
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	part, err := writer.CreateFormFile(paramName, fi.Name())
+	if err != nil {
+		return nil, err
+	}
+	part.Write(fileContents)
+
+	err = writer.Close()
+	if err != nil {
+		return nil, err
+	}
+
+	request, _ := http.NewRequest("PUT", uri, body)
+	request.Header.Add("Content-Type", writer.FormDataContentType())
+
+	return request, nil
+}
+
+func handleThumbnail(path string, idVideo string) {
+	services.ConvertThumbnail(path)
+	SendThumbnail(path + ".jpg", idVideo)
 }
 
 func handle1080(path string, idVideo string) {
