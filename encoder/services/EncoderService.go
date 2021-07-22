@@ -180,6 +180,29 @@ func ConvertVideoTo240(path string){
 	log.Println("Encoder: 240p - video encoded")
 }
 
+func ConvertThumbnail(path string){
+	var err error
+
+	log.Println("Encoder: Composing Thumbnail")
+	cmd := exec.Command("ffmpeg",
+		"-i", path, "-vframes", "1", "-an",
+		"-s", "400x222", "-ss", "1", path + ".jpg",
+	)
+
+	stdoutBuf := &bytes.Buffer{}
+	stderrBuf := &bytes.Buffer{}
+	cmd.Stdout = stdoutBuf
+	cmd.Stderr = stderrBuf
+
+	if err = cmd.Run(); err != nil {
+		log.Println("cmd failed: %s", strings.Join(cmd.Args, " "))
+		log.Println(string(stderrBuf.Bytes()))
+		log.Fatal(err)
+	}
+
+	log.Println("Encoder: Thumbnail generated")
+}
+
 func DecomposeQuality(path string) int {
 	bitrate := DecomposeBitrate(path)
 	width := DecomposeWidth(path)

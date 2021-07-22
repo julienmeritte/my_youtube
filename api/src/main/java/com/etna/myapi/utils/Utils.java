@@ -63,6 +63,7 @@ public final class Utils {
         jsonReponse.put("name", video.getName());
         jsonReponse.put("id", video.getIdVideo());
         jsonReponse.put("source", Paths.get(video.getSource()).toString().replace('\\', '/'));
+        jsonReponse.put("image", Paths.get(video.getImage()).toString().replace('\\', '/'));
         jsonReponse.put("created_at", TrimTooLongLocalDateTime(video.getCreated_at()));
         jsonReponse.put("views", video.getView());
         jsonReponse.put("enabled", video.getEnabled());

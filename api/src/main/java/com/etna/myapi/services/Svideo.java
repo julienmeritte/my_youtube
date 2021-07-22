@@ -12,8 +12,12 @@ import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 import ws.schild.jave.*;
 
@@ -21,9 +25,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class Svideo {
@@ -61,11 +63,13 @@ public class Svideo {
                 break;
             }
         }
-        var staticRoot = Paths.get("videos" + File.separator + namePath);
+        var staticRootVideo = Paths.get("videos" + File.separator + namePath);
+        var staticRootImage = "images" + File.separator + "BAER.png";
         var video = new Evideo();
         video.setName(name);
-        video.setSource(staticRoot.toString());
+        video.setSource(staticRootVideo.toString());
         video.setNamePath(namePath);
+        video.setImage(staticRootImage);
         video.setEnabled(true);
         video.setUser(user);
         video.setDuration(Utils.getMp4Duration(root.toString()));
@@ -193,7 +197,7 @@ public class Svideo {
         return jsonResponse;
     }
 
-    public JSONObject updateVideoByUserId(Eusers user, String name, Long idVideo) throws JSONException {
+    public JSONObject updateVideoByUserId(Eusers user, String name, Long idVideo, MultipartFile source) throws JSONException {
         Evideo video;
         var jsonResponse = new JSONObject();
         try {
@@ -205,12 +209,38 @@ public class Svideo {
                 if (user != null) {
                     video.setUser(user);
                 }
-                if (name != null || user != null) {
+                if (source != null) {
+                    var root = Paths.get("./app" + File.separator + "static" + File.separator + "images" + File.separator + video.getNamePath().replace(".mp4", ".jpg"));
+                    var tempFile = new File(String.valueOf(root));
+                    if (!tempFile.exists()) {
+                        Files.copy(source.getInputStream(), root);
+                    }
+                    video.setImage("images" + File.separator + video.getNamePath().replace(".mp4", ".jpg"));
+                }
+                if (name != null || user != null || source != null) {
                     videoRepository.save(video);
                 }
 
                 jsonResponse.put("message", "OK");
                 jsonResponse.put("data", Utils.jsonifyVideo(video, video.getUser()));
+                /*var urlSearch = "http://es01:9200/youtube/video/" + video.getIdVideo();
+
+                Map<String, Object> mapSearch = new HashMap<>();
+                mapSearch.put("name", video.getName());
+                mapSearch.put("user", user.getUsername());
+                mapSearch.put("date", video.getCreated_at().toString());
+                mapSearch.put("id", video.getIdVideo());
+                mapSearch.put("source", video.getSource());
+                mapSearch.put("image", video.getImage());
+
+                var restTemplateSearch = new RestTemplate();
+
+                var headersSearch = new HttpHeaders();
+                headersSearch.setContentType(MediaType.APPLICATION_JSON);
+
+                HttpEntity<Map<String, Object>> entity = new HttpEntity<>(mapSearch, headersSearch);
+
+                restTemplateSearch.put( urlSearch, entity, String.class);*/
             } else {
                 throw new CustomResourceException();
             }

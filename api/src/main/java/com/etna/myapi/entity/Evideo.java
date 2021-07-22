@@ -35,6 +35,9 @@ public class Evideo {
     @Column(length = 120, nullable = false)
     private String source;
 
+    @Column(length = 120, nullable = false)
+    private String image;
+
     @ManyToOne
     @JoinColumn(name="idUser", nullable=false)
     private Eusers user;

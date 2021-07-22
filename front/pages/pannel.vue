@@ -60,7 +60,7 @@
               <div class="d-inline p-2 d-flex justify-content-center">
                 <img class="w-100 h-100 p-2 img-fluid img-thumbnail border-0" :src="`${items.videoLink}`">
                 <p class="px-5" v-on:click="videoRedirect(items.videoId)">{{items.videoName}}</p>
-                
+
                 <button type="button" class="btn btn-danger w-50 h-100" :id="items.videoId" v-on:click="removeVideo(items.videoId)">remove</button>
               </div>
             </div>
@@ -116,7 +116,7 @@ export default {
       });
       response.data.forEach(element => {
         json["videoId"] = element.id;
-        json["videoName"] = element.name.replace('.mp4' , '');
+        json ["videoImg"] = this.apiUrl + '/images/base' + element.name + '.jpg';
         json["videoLink"] = this.apiUrl + '/' + element.source;
         this.videoList.push(json);
         json = [];
@@ -146,7 +146,7 @@ export default {
         if (this.mail != "") {
           formData.append("email", this.mail);
         }
-        const response = await this.$axios.$put(this.apiUrl + '/user/' + id, formData, {
+        await this.$axios.$put(this.apiUrl + '/user/' + id, formData, {
           headers: {
             Authorization: "Bearer " + tokenUser
           }
@@ -158,7 +158,7 @@ export default {
                   sessionStorage.setItem("id" , this.response ["data"]["user"]["id"]);
                   sessionStorage.setItem("token" , this.response ["data"]["token"]);
           } catch (error) {
-            
+
           }
         }
       } catch (error) {
@@ -205,7 +205,7 @@ export default {
       let str = '';
       for (let index = 0; index < array.length; index++) {
         if (array[index] == ' ') {
-          array[index] = '-';
+          array[index] = '_';
         }
       }
       for (let index = 0; index < array.length; index++) {
@@ -215,7 +215,8 @@ export default {
     },
     videoRedirect(id) {
       sessionStorage.setItem("idVideo" , id);
-      this.$router.push({path: "/video"})
+      this.videoFile = '';
+      this.$router.push({path: "/video"});
     }
   }
 }
